@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace UsedCars.Domain
+namespace UsedCars.Models
 {
-    public class Comment
+    public class CommentModel
     {
         public int ID { get; }
         public String Title { get; }
@@ -15,7 +15,7 @@ namespace UsedCars.Domain
         public int? Vehicle_ID { get; }
         public int? Shop_ID { get; }
 
-        public Comment(int id, string title, string message, long submission_time, int? userid, int? vehicleid, int? shopid)
+        public CommentModel(int id, string title, string message, long submission_time, int? userid, int? vehicleid, int? shopid)
         {
             ID = id;
             Title = title;

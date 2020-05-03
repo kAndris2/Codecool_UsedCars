@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace UsedCars.Domain
+namespace UsedCars.Models
 {
-    public class Vehicle
+    public class VehicleModel
     {
         public String Brand { get; }
         public String Model { get; }
@@ -23,7 +23,7 @@ namespace UsedCars.Domain
         public int? Shop_ID { get; }
         public int? User_ID { get; }
 
-        public Vehicle(int id, string brand, string model, int vintage, string type, int price, string fuel, int cylinder, int odometer, string description, bool validity, int? shopid, int? userid)
+        public VehicleModel(int id, string brand, string model, int vintage, string type, int price, string fuel, int cylinder, int odometer, string description, bool validity, int? shopid, int? userid)
         {
             ID = id;
             Brand = brand;
@@ -40,7 +40,7 @@ namespace UsedCars.Domain
             User_ID = userid;
         }
 
-        public Vehicle(int id, string brand, string model, int vintage, string type, int price, string fuel, int cylinder, int odometer, string description, int? shopid, int? userid, int views, int votes, bool validity)
+        public VehicleModel(int id, string brand, string model, int vintage, string type, int price, string fuel, int cylinder, int odometer, string description, int? shopid, int? userid, int views, int votes, bool validity)
         {
             ID = id;
             Brand = brand;

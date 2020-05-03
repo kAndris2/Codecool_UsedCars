@@ -12,6 +12,7 @@ namespace UsedCars.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        IDAO IDAO = IDAO.Singleton;
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -20,18 +21,12 @@ namespace UsedCars.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View(IDAO);
         }
 
-        public IActionResult Privacy()
+        public IActionResult Search([FromQuery(Name = "brand")] string brand, [FromQuery(Name = "model")] string model)
         {
             return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace UsedCars.Domain
+namespace UsedCars.Models
 {
-    public class User
+    public class UserModel
     {
         public int ID { get; }
         public int Wallet { get; private set; }
@@ -19,25 +19,25 @@ namespace UsedCars.Domain
         public String Password { get; private set; }
         public String Introduction { get; private set; }
 
-        public User(int id, string name, long registration_date, DateTime birth_date, string email, string password, int wallet, string rank)
+        public UserModel(int id, string name, long registration_date, /*DateTime birth_date,*/ string email, string password, int wallet, string rank)
         {
             ID = id;
             Name = name;
             Registration_Date = registration_date;
-            Birth_Date = birth_date;
+            //Birth_Date = birth_date;
             Email = email;
             Password = password;
             Wallet = wallet;
             Rank = rank;
         }
 
-        public User(int id, string name, long registration_date, bool? gender, DateTime birth_date, string email, string password, int wallet, string rank, int views, string introduction)
+        public UserModel(int id, string name, long registration_date, bool? gender, /*DateTime birth_date,*/ string email, string password, int wallet, string rank, int views, string introduction)
         {
             ID = id;
             Name = name;
             Registration_Date = registration_date;
             Gender = gender;
-            Birth_Date = birth_date;
+            //Birth_Date = birth_date;
             Email = email;
             Password = password;
             Wallet = wallet;

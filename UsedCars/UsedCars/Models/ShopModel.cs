@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace UsedCars.Domain
+namespace UsedCars.Models
 {
-    public class Shop
+    public class ShopModel
     {
         public int ID { get; }
         public int Owner_ID { get; }
@@ -15,7 +15,7 @@ namespace UsedCars.Domain
         public String Address { get; private set; }
         public String Description { get; private set; }
 
-        public Shop(int id, string name, int ownerid, string address)
+        public ShopModel(int id, string name, int ownerid, string address)
         {
             ID = id;
             Name = name;
@@ -23,7 +23,7 @@ namespace UsedCars.Domain
             Address = address;
         }
 
-        public Shop(int id, string name, string description, DateTime foundation_date, int ownerid, string address, int views)
+        public ShopModel(int id, string name, string description, DateTime foundation_date, int ownerid, string address, int views)
         {
             ID = id;
             Name = name;

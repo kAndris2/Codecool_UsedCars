@@ -11,6 +11,8 @@ namespace UsedCars
 {
     public class Program
     {
+        public static readonly string ConnectionString = $"Host=localhost;Username=postgres;Password=admin;Database=UsedCars";
+
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();

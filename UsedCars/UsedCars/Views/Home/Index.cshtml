@@ -1,8 +1,29 @@
-﻿@{
+﻿@model IDAO
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div>
+    @using (Html.BeginForm("search", "Home", FormMethod.Get))
+    {
+        <label>Brands:</label><br>
+        <select name="brand">
+            <option value="all">Never mind</option>
+            @foreach (VehicleModel vehicle in Model.Vehicles)
+            {
+                <option value="@vehicle.Brand">"@Model.GetBrandCount(vehicle.Brand)"</option>
+            }
+        </select>
+
+        <label>Models:</label><br>
+        <select name="model">
+            <option value="all">Never mind</option>
+            @foreach (VehicleModel vehicle in Model.Vehicles)
+            {
+                <option value="@vehicle.Model">@Model.GetModelCount(vehicle.Model)</option>
+            }
+        </select>
+
+        <input type="submit">
+    }
 </div>

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace UsedCars.Domain
+namespace UsedCars.Models
 {
-    public class Picture
+    public class PictureModel
     {
         public int ID { get; }
         public String Route { get; }
@@ -13,7 +13,7 @@ namespace UsedCars.Domain
         public int? Vehicle_ID { get; }
         public int? Shop_ID { get; }
 
-        public Picture(int id, string route, int? userid, int? vehicleid, int? shopid)
+        public PictureModel(int id, string route, int? userid, int? vehicleid, int? shopid)
         {
             ID = id;
             Route = route;

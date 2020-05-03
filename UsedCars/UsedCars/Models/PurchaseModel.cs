@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace UsedCars.Domain
+namespace UsedCars.Models
 {
-    public class Purchase
+    public class PurchaseModel
     {
         public int ID { get; }
         public int Shop_ID { get; }
@@ -13,7 +13,7 @@ namespace UsedCars.Domain
         public int Year { get; }
         public String Brand { get; }
 
-        public Purchase(int id, int shopid, int amount, int year, string brand)
+        public PurchaseModel(int id, int shopid, int amount, int year, string brand)
         {
             ID = id;
             Shop_ID = shopid;
