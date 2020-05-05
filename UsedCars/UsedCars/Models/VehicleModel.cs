@@ -23,6 +23,9 @@ namespace UsedCars.Models
         public int? Shop_ID { get; }
         public int? User_ID { get; }
 
+        public List<PictureModel> Pictures = new List<PictureModel>();
+        public List<CommentModel> Comments = new List<CommentModel>();
+
         public VehicleModel(int id, string brand, string model, int vintage, string type, int price, string fuel, int cylinder, int odometer, string description, bool validity, int? shopid, int? userid)
         {
             ID = id;
@@ -66,5 +69,10 @@ namespace UsedCars.Models
         public void SetDescription(string description) { Description = description; }
         public void SetPrice(int new_price) { Price = new_price; }
         public void SetOdometer(int value) { Odometer = value; }
+        
+        public String GetFirstPicture() { return Pictures.Count == 0 ? null : Pictures[0].Route; }
+
+        public void AddPicture(PictureModel picture) { Pictures.Add(picture); }
+        public void AddComment(CommentModel comment) { Comments.Add(comment); }
     }
 }

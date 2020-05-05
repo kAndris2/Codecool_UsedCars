@@ -23,37 +23,84 @@ namespace UsedCars
         }
 
         public List<UserModel> Users = new List<UserModel>();
-        public List<VehicleModel> Vehicles = new List<VehicleModel>();
         public List<ShopModel> Shops = new List<ShopModel>();
-        public List<CommentModel> Comments = new List<CommentModel>();
-        public List<PurchaseModel> Purchases = new List<PurchaseModel>();
-        public List<PictureModel> Pictures = new List<PictureModel>();
+        public List<VehicleModel> FoundVehicles = new List<VehicleModel>();
 
         private IDAO()
         {
-            //LoadFiles();
+            LoadFiles();
         }
 
-        public String GetBrandCount(string brand)
+        public String GetValueCount(string title, string value)
         {
             int count = 0;
-            foreach (VehicleModel vehicle in Vehicles)
+            foreach (UserModel user in Users)
             {
-                if (vehicle.Brand.Equals(brand))
-                    count++;
+                foreach (VehicleModel vehicle in user.Vehicles)
+                {
+                    if (value == "brand" && vehicle.Brand.Equals(title))
+                        count++;
+                    else if (value == "model" && vehicle.Model.Equals(title))
+                        count++;
+                    else if (value == "type" && vehicle.Type.Equals(title))
+                        count++;
+                    else if (value == "fuel" && vehicle.Fuel.Equals(title))
+                        count++;
+                }
             }
-            return $"{brand}({count})";
+            return $"{title}({count})";
         }
 
-        public String GetModelCount(string model)
+        public ShopModel GetShopByID(int id)
         {
-            int count = 0;
-            foreach (VehicleModel vehicle in Vehicles)
+            foreach (ShopModel shop in Shops)
             {
-                if (vehicle.Model.Equals(model))
-                    count++;
+                if (shop.ID.Equals(id))
+                    return shop;
             }
-            return $"{model}({count})";
+            throw new ArgumentException($"Invalid Shop ID! - ('{id}')");
+        }
+
+        public UserModel GetUserByID(int id)
+        {
+            foreach (UserModel user in Users)
+            {
+                if (user.ID.Equals(id))
+                    return user;
+            }
+            throw new ArgumentException($"Invalid User ID! - ('{id}')");
+        }
+
+        public void Register(string name, string email, string password)
+        {
+            int id = 0;
+            long milisec = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            string sqlstr = "INSERT INTO users " +
+                                "(name, registration_date, email, password, rank) " +
+                                "VALUES " +
+                                    "(@name, @date, @email, @password, @rank)";
+            using (var conn = new NpgsqlConnection(Program.ConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sqlstr, conn))
+                {
+                    cmd.Parameters.AddWithValue("name", name);
+                    cmd.Parameters.AddWithValue("date", milisec);
+                    cmd.Parameters.AddWithValue("email", email);
+                    cmd.Parameters.AddWithValue("password", password);
+                    cmd.Parameters.AddWithValue("rank", "member");
+                    cmd.ExecuteNonQuery();
+                }
+                using (var cmd = new NpgsqlCommand("SELECT * FROM users", conn))
+                {
+                    var reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        id = int.Parse(reader["id"].ToString());
+                    }
+                }
+            }
+            Users.Add(new UserModel(id, name, milisec, email, password));
         }
 
         private void LoadFiles()

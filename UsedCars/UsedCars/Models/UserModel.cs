@@ -19,16 +19,18 @@ namespace UsedCars.Models
         public String Password { get; private set; }
         public String Introduction { get; private set; }
 
-        public UserModel(int id, string name, long registration_date, /*DateTime birth_date,*/ string email, string password, int wallet, string rank)
+        public List<VehicleModel> Vehicles = new List<VehicleModel>();
+        public List<ShopModel> Shops = new List<ShopModel>();
+        public List<PictureModel> Pictures = new List<PictureModel>();
+        public List<CommentModel> Comments = new List<CommentModel>();
+
+        public UserModel(int id, string name, long registration_date, string email, string password)
         {
             ID = id;
             Name = name;
             Registration_Date = registration_date;
-            //Birth_Date = birth_date;
             Email = email;
             Password = password;
-            Wallet = wallet;
-            Rank = rank;
         }
 
         public UserModel(int id, string name, long registration_date, bool? gender, /*DateTime birth_date,*/ string email, string password, int wallet, string rank, int views, string introduction)
@@ -56,5 +58,12 @@ namespace UsedCars.Models
         public void SetPassword(string new_password) { Password = new_password; }
         public void SetRank(string new_rank) { Rank = new_rank; }
         public void SetIntroduction(string new_intro) { Introduction = new_intro; }
+
+        public String GetFirstPicture() { return Pictures.Count == 0 ? null : Pictures[0].Route; }
+
+        public void AddVehicle(VehicleModel vehicle) { Vehicles.Add(vehicle); }
+        public void AddShop(ShopModel shop) { Shops.Add(shop); }
+        public void AddPicture(PictureModel picture) { Pictures.Add(picture); }
+        public void AddComment(CommentModel comment) { Comments.Add(comment); }
     }
 }

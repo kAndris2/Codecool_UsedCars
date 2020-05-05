@@ -1,0 +1,27 @@
+﻿@model IDAO
+@{
+    ViewData["Title"] = "Search";
+}
+
+@foreach (VehicleModel vehicle in Model.FoundVehicles)
+{
+    if (vehicle.Shop_ID >= 1)
+    {
+        <div class="card mb-3">
+            <img class="card-img-top" src="@vehicle.GetFirstPicture()" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">@vehicle.Brand @vehicle.Model</h5>
+                <p class="card-text">
+                    - @vehicle.Fuel
+                    - @vehicle.Vintage
+                    - @vehicle.Cylinder_Capacity
+                    - @vehicle.Odometer
+
+                    #ID: @vehicle.ID
+                    @Model.GetShopByID(int.Parse($"{vehicle.Shop_ID}"))
+                </p>
+                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            </div>
+        </div>
+    }
+}

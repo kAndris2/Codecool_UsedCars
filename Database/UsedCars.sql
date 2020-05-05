@@ -5,11 +5,11 @@ CREATE TABLE public.users
 	name character varying(20) not null,
 	registration_date bigint not null,
 	gender bool,
-	birth_date date not null,
+	birth_date date,
 	email character varying(30) not null,
 	password character varying(20) not null,
-	wallet int not null,
-	rank character varying(15) not null,
+	wallet int default 0,
+	rank character varying(15),
 	views int default 0,
 	introduction character varying(255)
 );

@@ -15,6 +15,10 @@ namespace UsedCars.Models
         public String Address { get; private set; }
         public String Description { get; private set; }
 
+        public List<PictureModel> Pictures = new List<PictureModel>();
+        public List<CommentModel> Comments = new List<CommentModel>();
+        public List<PurchaseModel> Purchases = new List<PurchaseModel>();
+
         public ShopModel(int id, string name, int ownerid, string address)
         {
             ID = id;
@@ -40,5 +44,11 @@ namespace UsedCars.Models
         public void SetName(string new_name) { Name = new_name; }
         public void SetAddress(string new_address) { Address = new_address; }
         public void SetDescription(string text) { Description = text; }
+
+        public String GetFirstPicture() { return Pictures.Count == 0 ? null : Pictures[0].Route; }
+
+        public void AddPicture(PictureModel picture) { Pictures.Add(picture); }
+        public void AddComment(CommentModel comment) { Comments.Add(comment); }
+        public void AddPurchase(PurchaseModel purchase) { Purchases.Add(purchase); }
     }
 }

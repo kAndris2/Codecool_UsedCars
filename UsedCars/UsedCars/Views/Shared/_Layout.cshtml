@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using UsedCars.Services
+@inject IUserService userService;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -17,14 +20,31 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+
+                        <div class="mr-5">Logged in as @User.Claims.First().Value </div>
+
+
+                        <div class="float-right">
+
+                            @Html.ActionLink("Log Out", "Logout", "Account", null, new { @class = "btn btn-danger" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="float-right">
+                            @Html.ActionLink(
+                                "Sign up",
+                                "Register",                         // controller action
+                                "Account",        // controller
+                                null,         // action parameters aka route values
+                                new { @class = "btn btn-warning mr-3 text-white" })
+                        </div>
+                        <div class="float-right">
+                            @Html.ActionLink("Log In", "Login", "Account", null, new { @class = "btn btn-success" })
+                        </div>
+                    }
                 </div>
             </div>
         </nav>

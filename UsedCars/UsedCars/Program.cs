@@ -11,7 +11,7 @@ namespace UsedCars
 {
     public class Program
     {
-        public static readonly string ConnectionString = $"Host=localhost;Username=postgres;Password=admin;Database=UsedCars";
+        public static readonly string ConnectionString = $"Host=localhost;Username=postgres;Password=admin;Database=Used_Car";
 
         public static void Main(string[] args)
         {

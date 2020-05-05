@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace UsedCars.Models
 {
@@ -7,5 +8,7 @@ namespace UsedCars.Models
         public string RequestId { get; set; }
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+        public List<string> Error { get; set; }
     }
 }

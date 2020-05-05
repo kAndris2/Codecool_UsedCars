@@ -3,27 +3,124 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div>
+<div class="container" style="width:1300px; border:1px solid black;">
     @using (Html.BeginForm("search", "Home", FormMethod.Get))
     {
-        <label>Brands:</label><br>
-        <select name="brand">
-            <option value="all">Never mind</option>
-            @foreach (VehicleModel vehicle in Model.Vehicles)
-            {
-                <option value="@vehicle.Brand">"@Model.GetBrandCount(vehicle.Brand)"</option>
-            }
-        </select>
+        <div class="row">
 
-        <label>Models:</label><br>
-        <select name="model">
-            <option value="all">Never mind</option>
-            @foreach (VehicleModel vehicle in Model.Vehicles)
-            {
-                <option value="@vehicle.Model">@Model.GetModelCount(vehicle.Model)</option>
-            }
-        </select>
+            <div class="col-sm-2">
+                <label>Brands:</label><br>
+                <select name="brand" style="width: 10em; background-color:black; color:orange;">
+                    <option value="all">Never mind</option>
+                    @foreach (UserModel user in Model.Users)
+                    {
+                        foreach (VehicleModel vehicle in user.Vehicles)
+                        {
+                        <option value="@vehicle.Brand">"@Model.GetValueCount(vehicle.Brand, "brand")"</option>
+                        }
+                    }
+                </select>
+            </div>
 
-        <input type="submit">
+            <div class="col-sm-2">
+                <label>Models:</label><br>
+                <select name="model" style="width: 10em; background-color:black; color:orange;">
+                    <option value="all">Never mind</option>
+                    @foreach (UserModel user in Model.Users)
+                    {
+                        foreach (VehicleModel vehicle in user.Vehicles)
+                        {
+                        <option value="@vehicle.Model">@Model.GetValueCount(vehicle.Model, "model")</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-sm-2">
+                <label>Types:</label><br>
+                <select name="type" style="width: 10em; background-color:black; color:orange;">
+                    <option value="all">Never mind</option>
+                    @foreach (UserModel user in Model.Users)
+                    {
+                        foreach (VehicleModel vehicle in user.Vehicles)
+                        {
+                        <option value="@vehicle.Type">@Model.GetValueCount(vehicle.Type, "type")</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-sm-2">
+                <label>Fuels:</label><br>
+                <select name="fuel" style="width: 10em; background-color:black; color:orange;">
+                    <option value="all">Never mind</option>
+                    @foreach (UserModel user in Model.Users)
+                    {
+                        foreach (VehicleModel vehicle in user.Vehicles)
+                        {
+                        <option value="@vehicle.Fuel">@Model.GetValueCount(vehicle.Fuel, "fuel")</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-sm-3">
+                <label>Vintage (from to):</label><br>
+                <select name="vintage-from" style="background-color:black; color:orange;">
+                    <option value="all">Never mind</option>
+                    @foreach (UserModel user in Model.Users)
+                    {
+                        foreach (VehicleModel vehicle in user.Vehicles)
+                        {
+                        <option value="@vehicle.Vintage">@vehicle.Vintage</option>
+                        }
+                    }
+                </select>
+
+                <select name="vintage-to" style="background-color:black; color:orange;">
+                    <option value="all">Never mind</option>
+                    @foreach (UserModel user in Model.Users)
+                    {
+                        foreach (VehicleModel vehicle in user.Vehicles)
+                        {
+                            <option value="@vehicle.Vintage">@vehicle.Vintage</option>
+                        }
+                    }
+                 </select>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-sm-3">
+                <label>Purchase price (from to):</label>
+                <input type="number" style="width: 7em; background-color:black; color:orange;" name="purchase-from" value="0" />
+                <input type="number" style="width: 7em; background-color:black; color:orange;" name="purchase-to" value="@Int32.MaxValue" />
+                <br>
+            </div>
+
+            <div class="col-sm-3">
+                <label>Odometer reading (from to):</label><br>
+                <input type="number" style="width: 7em; background-color:black; color:orange;" name="odometer-from" value="0" />
+                <input type="number" style="width: 7em; background-color:black; color:orange;" name="odometer-to" value="@Int32.MaxValue" />
+                <br>
+            </div>
+
+            <div class="col-sm-3">
+                <label>Cylinder capacity (from to):</label><br>
+                <input type="number" style="width: 7em; background-color:black; color:orange;" name="cylinder-from" value="0" />
+                <input type="number" style="width: 7em; background-color:black; color:orange;" name="cylinder-to" value="@Int32.MaxValue" />
+                <br>
+            </div>
+
+            <div class="col-sm-3">
+                <br>
+                <button type="submit" class="btn btn-warning">
+                    <b>Search</b>
+                </button>
+            </div>
+
+        </div>
     }
 </div>
