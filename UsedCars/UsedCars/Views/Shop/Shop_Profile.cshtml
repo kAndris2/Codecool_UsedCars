@@ -1,0 +1,123 @@
+﻿@model ShopModel
+@{
+    ViewData["Title"] = "Shop_Profile";
+    IDAO Singleton = IDAO.Singleton;
+    Singleton.UpdateViews("shops", Model.ID);
+}
+
+<div class="card">
+    @if (Model.Pictures.Count >= 1)
+    {
+        <img class="card-img-top" src="@Model.Pictures[0].Route" alt="Card image cap">
+    }
+    else
+    {
+        <img class="card-img-top" src="~/pics/no_img.png" alt="Card image cap">
+    }
+
+    <div class="card-img-overlay">
+        @Html.ActionLink("Edit", "Shop_Edit", "Shop", new { id = Model.ID }, new { @class = "btn btn-primary" })
+
+        <img src="~/pics/views.png" width="30" height="30">
+        <span class="badge badge-light">@Model.Views</span>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">#@Model.ID - @Model.Name (@Model.Address)</h5>
+
+        <p class="card-text">
+            Owner:
+            @Html.ActionLink(@Singleton.GetUserByID(Model.Owner_ID).Name,
+                             "User_Profile", "Profile", new { id = Model.Owner_ID })
+        </p>
+
+        <p class="card-text">
+            Description:
+            @if (Model.Description == "")
+            {
+                <a>N/A</a>
+            }
+            else
+            {
+                <br>
+                @Model.Description
+            }
+        </p>
+
+        <p class="card-text"><small class="text-muted">Registered at: @Model.GetDate()</small></p>
+
+    </div>
+</div>
+
+<div class="float-right">
+    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal">Add comment</button>
+</div>
+
+@foreach (CommentModel comment in Model.Comments)
+{
+    <div class="media" style="background-color:white;">
+        
+        <a href="@Url.Action("User_Profile", "Profile", new { id = comment.Owner_ID})">
+            @if (Singleton.GetUserByID(comment.Owner_ID).Pictures.Count >= 1)
+            {
+                <img class="mr-3" src="@Singleton.GetUserByID(comment.Owner_ID).Pictures[0].Route" width="70" height="64"/>
+            }
+            else
+            {
+                <img class="mr-3" src="~/pics/no_img.png" width="70" height="64"/>
+            }
+        </a>
+
+        <div class="media-body">
+            <h5 class="mt-0">#@Model.ID - @comment.Title</h5>
+             @comment.Message
+        </div>
+
+        <p class="card-text"><small class="text-muted">@comment.GetDate()</small></p>
+    </div><br>
+}
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add a comment!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-action="Shop_Comment" asp-controller="Shop">
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Title:</label>
+                        <input type="text" class="form-control" name="title">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Message:</label>
+                        <textarea class="form-control" name="message"></textarea>
+                    </div>
+                    <input type="hidden" name="ownerid" value="@Singleton.GetUserByEmail(User.Claims.First().Value).ID" />
+                    <input type="hidden" name="shopid" value="@Model.ID" />
+
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-warning">Add</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#exampleModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var modal = $(this)
+  modal.find('.modal-title').text('Add a comment!')
+  modal.find('.modal-body input').val(recipient)
+})
+</script>
+

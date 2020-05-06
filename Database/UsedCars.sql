@@ -17,6 +17,7 @@ CREATE TABLE public.users
 CREATE TABLE public.vehicles
 (
 	id serial not null,
+	registration_date bigint not null,
 	brand character varying(20) not null,
 	model character varying(20) not null,
 	vintage int not null,
@@ -37,6 +38,7 @@ CREATE TABLE public.shops
 (
 	id serial not null,
 	name character varying(25) not null,
+	registration_date bigint not null,
 	description character varying(255),
 	foundation_date date,
 	owner_id int not null,
@@ -50,6 +52,7 @@ CREATE TABLE public.comments
 	title character varying(50) not null,
 	message character varying(255) not null,
 	submission_time bigint not null,
+	owner_id int not null,
 	user_id int,
 	vehicle_id int,
 	shop_id int

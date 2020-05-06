@@ -1,0 +1,41 @@
+﻿@model IDAO
+@{
+    ViewData["Title"] = "List";
+}
+
+<table class="table table-striped table-dark">
+    <thead class="thead-dark">
+        <tr>
+            <th class="th-sm text-center">Image</th>
+            <th class="th-sm text-center">Name</th>
+            <th class="th-sm text-center">Address</th>
+            <th class="th-sm text-center">Owner</th>
+            <th class="th-sm text-center">Views</th>
+        </tr>
+    </thead>
+    @foreach (UserModel user in Model.Users)
+    {
+        foreach (ShopModel shop in user.Shops)
+        {
+            <tr>
+                <td class="text-center">
+                    @if (shop.Pictures.Count >= 1)
+                    {
+                        <img src="@shop.Pictures[0].Route" width="80" height="50">
+                    }
+                    else
+                    {
+                        <img src="~/pics/no_img.png" width="80" height="50">
+                    }
+                </td>
+                <td class="text-center">
+                    @Html.ActionLink(shop.Name, "Shop_Profile", new { id = shop.ID })
+                </td>
+                <td class="text-center">@shop.Address</td>
+                <td class="text-center">@Model.GetUserByID(shop.Owner_ID).Name</td>
+                <td class="text-center">@shop.Views</td>
+            </tr>
+        }
+    }
+</table>
+

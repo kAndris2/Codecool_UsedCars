@@ -14,36 +14,43 @@ namespace UsedCars.Models
         public String Name { get; private set; }
         public String Address { get; private set; }
         public String Description { get; private set; }
+        public long Registration_Date { get; }
 
         public List<PictureModel> Pictures = new List<PictureModel>();
         public List<CommentModel> Comments = new List<CommentModel>();
         public List<PurchaseModel> Purchases = new List<PurchaseModel>();
 
-        public ShopModel(int id, string name, int ownerid, string address)
+        public ShopModel(int id, string name, string address, int ownerid, long regist)
         {
             ID = id;
             Name = name;
             Owner_ID = ownerid;
             Address = address;
+            Registration_Date = regist;
         }
 
-        public ShopModel(int id, string name, string description, DateTime foundation_date, int ownerid, string address, int views)
+        public ShopModel(int id, string name, string description, /*DateTime foundation_date,*/ int ownerid, string address, int views)
         {
             ID = id;
             Name = name;
             Description = description;
-            Foundation_Date = foundation_date;
+            //Foundation_Date = foundation_date;
             Owner_ID = ownerid;
             Address = address;
             Views = views;
         }
 
+        public DateTime GetDate() { return new DateTime(1970, 1, 1).AddMilliseconds(double.Parse(Registration_Date.ToString())); }
+
         public void IncreaseViews() { Views++; }
         
         public void SetFoundationDate(DateTime new_date) { Foundation_Date = new_date; }
-        public void SetName(string new_name) { Name = new_name; }
-        public void SetAddress(string new_address) { Address = new_address; }
-        public void SetDescription(string text) { Description = text; }
+        public void Update(string name, string address, string description)
+        {
+            Name = name;
+            Address = address;
+            Description = description;
+        }
 
         public String GetFirstPicture() { return Pictures.Count == 0 ? null : Pictures[0].Route; }
 

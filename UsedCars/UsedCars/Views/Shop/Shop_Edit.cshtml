@@ -1,0 +1,53 @@
+﻿@model ShopModel
+@{
+    ViewData["Title"] = "Shop_Edit";
+}
+
+<br>
+<div class="float-right">
+    @Html.ActionLink("Delete shop", "Delete", "Shop", new { id = Model.ID }, new { @class = "btn btn-danger" })
+</div>
+
+<h1>Shop - Editor</h1>
+
+<form method="post" asp-controller="Picture" asp-action="Upload" enctype="multipart/form-data">
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <div class="custom-file">
+                <input type="hidden" name="type" value="shop" />
+                <input type="hidden" name="id" value="@Model.ID" />
+                <input class="form-control custom-file-input" type="file" name="file" />
+                <label class="custom-file-label">Browse a picture to upload!</label>
+            </div>
+        </div>
+        <button class="btn btn-info" type="submit">Upload</button>
+
+    </div>
+</form>
+
+@using (Html.BeginForm("Editor", "Shop", FormMethod.Post))
+{
+    <div class="form-group">
+        <label for="">Name:</label>
+        @Html.TextBoxFor(m => m.Name, new { Name = "name", @class = "form-control", @required = "" })
+    </div>
+
+    <div class="form-group">
+        <label for="">Address:</label>
+        @Html.TextBoxFor(m => m.Address, new { Name = "address", @class = "form-control", @required = "" })
+    </div>
+
+    <div class="form-group">
+        <label for="">Description:</label>
+        @Html.TextBoxFor(m => m.Description, new { Name = "description", @class = "form-control", @required = "" })
+    </div>
+
+    <input type="hidden" name="id" value="@Model.ID" />
+    <button type="submit" class="btn btn-success">Done</button>
+
+    <div class="float-right">
+        <span>
+            @Html.ActionLink("Back", "Shop_Profile", "Shop", new { id = Model.ID}, new { @class = "btn btn-danger ml-auto mr-1" })
+        </span>
+    </div>
+}

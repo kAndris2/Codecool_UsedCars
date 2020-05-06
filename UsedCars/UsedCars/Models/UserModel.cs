@@ -48,6 +48,8 @@ namespace UsedCars.Models
             Introduction = introduction;
         }
 
+        public DateTime GetDate() { return new DateTime(1970, 1, 1).AddMilliseconds(double.Parse(Registration_Date.ToString())); }
+
         public void IncreaseWalletAmount(int amount) { Wallet += amount; }
         public void DecreaseWalletAmount(int amount) { Wallet -= amount; }
         public void IncreaseViews() { Views++; }
@@ -65,5 +67,7 @@ namespace UsedCars.Models
         public void AddShop(ShopModel shop) { Shops.Add(shop); }
         public void AddPicture(PictureModel picture) { Pictures.Add(picture); }
         public void AddComment(CommentModel comment) { Comments.Add(comment); }
+
+        public void RemoveShop(ShopModel shop) { Shops.Remove(shop); }
     }
 }
