@@ -2,16 +2,16 @@
 CREATE TABLE public.users
 (
 	id serial not null,
-	name character varying(20) not null,
+	name character varying(30) not null,
 	registration_date bigint not null,
 	gender bool,
-	birth_date date,
+	birth_date bigint,
 	email character varying(30) not null,
 	password character varying(20) not null,
 	wallet int default 0,
 	rank character varying(15),
 	views int default 0,
-	introduction character varying(255)
+	introduction character varying(500)
 );
 
 CREATE TABLE public.vehicles
@@ -37,9 +37,9 @@ CREATE TABLE public.vehicles
 CREATE TABLE public.shops
 (
 	id serial not null,
-	name character varying(25) not null,
+	name character varying(30) not null,
 	registration_date bigint not null,
-	description character varying(255),
+	description character varying(500),
 	foundation_date date,
 	owner_id int not null,
 	address character varying(30) not null,
@@ -50,7 +50,7 @@ CREATE TABLE public.comments
 (
 	id serial not null,
 	title character varying(50) not null,
-	message character varying(255) not null,
+	message character varying(500) not null,
 	submission_time bigint not null,
 	owner_id int not null,
 	user_id int,
@@ -70,7 +70,7 @@ CREATE TABLE public.purchases
 CREATE TABLE public.pictures
 (
 	id serial not null,
-	route character varying(255) not null,
+	route character varying(300) not null,
 	user_id int,
 	vehicle_id int,
 	shop_id int

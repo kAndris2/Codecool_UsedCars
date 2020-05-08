@@ -1,0 +1,115 @@
+﻿@model VehicleModel
+@{
+    ViewData["Title"] = "Vehicle_Edit";
+}
+
+<br>
+<div class="float-right">
+    @Html.ActionLink("Delete vehicle", "Delete_Vehicle", "Vehicle", new { id = Model.ID }, new { @class = "btn btn-danger" })
+</div>
+
+<h1>Vehicle - Editor</h1>
+
+<form method="post" asp-controller="Picture" asp-action="Upload" enctype="multipart/form-data">
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <div class="custom-file">
+                <input type="hidden" name="type" value="vehicle" />
+                <input type="hidden" name="id" value="@Model.ID" />
+                <input class="form-control custom-file-input" type="file" name="file" />
+                <label class="custom-file-label">Browse a picture to upload!</label>
+            </div>
+        </div>
+        <button class="btn btn-info" type="submit">Upload</button>
+
+    </div>
+</form>
+
+@using (Html.BeginForm("Editor", "Vehicle", FormMethod.Post))
+{
+    <div class="row">
+
+        <div class="col-sm-2">
+            <label for="">Brand:</label><br>
+            <input type="text" name="brand" value="@Model.Brand" required />
+        </div>
+
+        <div class="col-sm-2">
+            <label for="">Model:</label>
+            <input type="text" name="model" value="@Model.Model" required />
+        </div>
+
+        <div class="col-sm-2">
+            <label for="">Type:</label>
+            <input type="text" name="type" value="@Model.Type" required />
+        </div>
+
+        <div class="col-sm-2">
+            <label for="">Fuel:</label>
+            <input type="text" name="fuel" value="@Model.Fuel" required />
+        </div>
+
+        <div class="col-sm-2">
+            <label for="">Odometer:</label>
+            <input type="number" name="odometer" value="@Model.Odometer" required />
+        </div>
+
+        <div class="col-sm-2">
+            <label for="">Vintage:</label><br>
+            <select name="year">
+                <option value="@Model.Vintage">@Model.Vintage</option>
+                @for (int i = 1970; i < DateTime.Now.Year + 1; i++)
+                {
+                    if (i == Model.Vintage)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        <option value="@i">@i</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="col-sm-1">
+            <label>Validity:</label><br>
+            <select name="validity">
+                <option value="@Model.GetValidity()">@Model.GetValidity()</option>
+                @if (Model.Validity)
+                {
+                    <option value="Invalid">Invalid</option>
+                }
+                else
+                {
+                    <option value="Valid">Valid</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-sm-2">
+            <label>Price:</label><br>
+            <input type="number" name="price" value="@Model.Price" />
+        </div>
+
+        <div class="col-sm-2">
+            <label>Cylinder capacity:</label><br>
+            <input type="number" name="cylinder" value="@Model.Cylinder_Capacity" />
+        </div>
+
+        <div class="col-7">
+            <label>Description:</label><br>
+            <textarea name="description" cols="55" rows="5" required>@Model.Description</textarea>
+        </div>
+
+    </div>
+
+    <input type="hidden" name="id" value="@Model.ID" />
+    <button type="submit" class="btn btn-success">Done</button>
+
+    <div class="float-right">
+        <span>
+            @Html.ActionLink("Back", "Vehicle_Profile", "Vehicle", new { id = Model.ID }, new { @class = "btn btn-danger ml-auto mr-1" })
+        </span>
+    </div>
+}

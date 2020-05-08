@@ -1,0 +1,88 @@
+﻿@model VehicleModel
+@{
+    ViewData["Title"] = "Create";
+    UserModel user = IDAO.Singleton.GetUserByEmail(User.Claims.First().Value);
+}
+
+<h1>Vehicle Creator</h1>
+
+    <div class="container" style="background-color:white; width:1900px; border:1px solid black;">
+        <form method="post" asp-action="Create_Vehicle" asp-controller="Vehicle">
+
+            <div class="row">
+
+                <div class="col-sm-2">
+                    <label for="">Brand:</label><br>
+                    <input type="text" name="brand" required />
+                </div>
+
+                <div class="col-sm-2">
+                    <label for="">Model:</label>
+                    <input type="text" name="model" required />
+                </div>
+
+                <div class="col-sm-2">
+                    <label for="">Type:</label>
+                    <input type="text" name="type" required />
+                </div>
+
+                <div class="col-sm-2">
+                    <label for="">Fuel:</label>
+                    <input type="text" name="fuel" required />
+                </div>
+
+                <div class="col-sm-2">
+                    <label for="">Odometer:</label>
+                    <input type="number" name="odometer" placeholder="km" required />
+                </div>
+
+                <div class="col-sm-2">
+                    <label for="">Vintage:</label><br>
+                    <select name="year">
+                        @for (int i = 1970; i < DateTime.Now.Year + 1; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-sm-1">
+                    <label>Validity:</label><br>
+                    <select name="validity">
+                        <option value="Valid">Valid</option>
+                        <option value="Invalid">Invalid</option>
+                    </select>
+                </div>
+
+                <div class="col-sm-2">
+                    <label>Price:</label><br>
+                    <input type="number" name="price" placeholder="Ft" />
+                </div>
+
+                <div class="col-sm-2">
+                    <label>Cylinder capacity:</label><br>
+                    <input type="number" name="cylinder" placeholder="cm3" />
+                </div>
+
+                <div class="col-sm-1">
+                    <label>Shop:</label><br>
+                    <select name="shopid">
+                        @foreach (ShopModel shop in user.Shops)
+                        {
+                            <option value="@shop.ID">@shop.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-7">
+                    <label>Description:</label><br>
+                    <textarea name="description" cols="55" rows="5" required></textarea>
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn btn-success">Done</button>
+
+        </form>
+    </div>
+

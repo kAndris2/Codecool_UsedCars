@@ -7,19 +7,19 @@ namespace UsedCars.Models
 {
     public class VehicleModel
     {
-        public String Brand { get; }
-        public String Model { get; }
-        public String Type { get; }
-        public String Fuel { get; }
+        public String Brand { get; private set; }
+        public String Model { get; private set; }
+        public String Type { get; private set; }
+        public String Fuel { get; private set; }
         public String Description { get; private set; }
         public int ID { get; }
-        public int Vintage { get; }
+        public int Vintage { get; private set; }
         public int Price { get; private set; }
-        public int Cylinder_Capacity { get; }
+        public int Cylinder_Capacity { get; private set; }
         public int Odometer { get; private set; }
         public int Views { get; private set; }
         public int Votes { get; private set; }
-        public bool Validity { get; }
+        public bool Validity { get; private set; }
         public int? Shop_ID { get; }
         public int? User_ID { get; }
         public long Registration_Date { get; }
@@ -66,16 +66,26 @@ namespace UsedCars.Models
         }
 
         public DateTime GetDate() { return new DateTime(1970, 1, 1).AddMilliseconds(double.Parse(Registration_Date.ToString())); }
+        public String GetFirstPicture() { return Pictures.Count == 0 ? null : Pictures[0].Route; }
+        public String GetValidity() { return $"{(Validity == true ? "Valid" : "Invalid")}"; }
 
         public void IncreaseViews() { Views++; }
         public void IncreaseVotes() { Votes++; }
         public void DecreaseVotes() { Votes--; }
 
-        public void SetDescription(string description) { Description = description; }
-        public void SetPrice(int new_price) { Price = new_price; }
-        public void SetOdometer(int value) { Odometer = value; }
-        
-        public String GetFirstPicture() { return Pictures.Count == 0 ? null : Pictures[0].Route; }
+        public void Update(string brand, string model, string type, string fuel, int odometer, int vintage, bool validity, int price, int cylinder, string description)
+        {
+            Brand = brand;
+            Model = model;
+            Type = type;
+            Fuel = fuel;
+            Odometer = odometer;
+            Vintage = vintage;
+            Validity = validity;
+            Price = price;
+            Cylinder_Capacity = cylinder;
+            Description = description;
+        }
 
         public void AddPicture(PictureModel picture) { Pictures.Add(picture); }
         public void AddComment(CommentModel comment) { Comments.Add(comment); }

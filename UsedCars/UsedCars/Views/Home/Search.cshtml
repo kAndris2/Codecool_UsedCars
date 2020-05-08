@@ -1,27 +1,47 @@
-﻿@model IDAO
+﻿@model List<VehicleModel>
 @{
     ViewData["Title"] = "Search";
+    IDAO Singleton = IDAO.Singleton;
 }
 
-@foreach (VehicleModel vehicle in Model.FoundVehicles)
-{
-    if (vehicle.Shop_ID >= 1)
-    {
-        <div class="card mb-3">
-            <img class="card-img-top" src="@vehicle.GetFirstPicture()" alt="Card image cap">
-            <div class="card-body">
-                <h5 class="card-title">@vehicle.Brand @vehicle.Model</h5>
-                <p class="card-text">
-                    - @vehicle.Fuel
-                    - @vehicle.Vintage
-                    - @vehicle.Cylinder_Capacity
-                    - @vehicle.Odometer
+<h1>Search results</h1>
 
-                    #ID: @vehicle.ID
-                    @Model.GetShopByID(int.Parse($"{vehicle.Shop_ID}"))
-                </p>
-                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+@foreach (VehicleModel vehicle in Model)
+{
+    if (vehicle.User_ID == null)
+    {
+        <div class="media" style="background-color:white;">
+
+            <a href="@Url.Action("Vehicle_Profile", "Vehicle", new { id = vehicle.ID})">
+                @if (vehicle.Pictures.Count >= 1)
+                {
+                    <img class="mr-3" src="@vehicle.GetFirstPicture()" width="200" height="140" />
+                }
+                else
+                {
+                    <img class="mr-3" src="~/pics/no_img.png" width="200" height="140" />
+                }
+            </a>
+
+            <div class="media-body">
+                <h5 class="mt-0">
+                    @Html.ActionLink($"{vehicle.Brand} {vehicle.Model} {Singleton.GetCapacity($"{vehicle.Cylinder_Capacity}")}", "Vehicle_Profile", "Vehicle", new { id = vehicle.ID })
+                </h5>
+
+                <p>@vehicle.Fuel, @vehicle.Vintage, @vehicle.Odometer km</p>
+                <p>@vehicle.Description</p>
+
+                @if (Singleton.GetShopByID(int.Parse($"{vehicle.Shop_ID}")).Pictures.Count >= 1)
+                {
+                    <img class="ml-3 float-lg-right" src="@Singleton.GetShopByID(int.Parse($"{vehicle.Shop_ID}")).GetFirstPicture()" width="80" height="75">
+                }
+
+                <p>(ID: @vehicle.ID)</p>
             </div>
+
+            <h6 class="card-text">@string.Format("{0:C}", vehicle.Price)</h6>
+
         </div>
+        <br>
     }
 }

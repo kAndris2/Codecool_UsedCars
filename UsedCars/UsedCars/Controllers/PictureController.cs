@@ -46,7 +46,14 @@ namespace UsedCars.Controllers
 
             IDAO.CreatePicture(filePath, type, id);
 
-            return RedirectToAction("Shop_Profile", "Shop", IDAO.GetShopByID(id));
+            if (type == "shop")
+                return RedirectToAction("Shop_Profile", "Shop", IDAO.GetShopByID(id));
+            else if (type == "vehicle")
+                return RedirectToAction("Vehicle_Profile", "Vehicle", IDAO.GetVehicleByID(id));
+            else if (type == "user")
+                return RedirectToAction("User_Profile", "User", IDAO.GetUserByID(id));
+
+            throw new ArgumentException("Something went wrong at picture upload!");
         }
     }
 }

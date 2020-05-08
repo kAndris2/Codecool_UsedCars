@@ -1,0 +1,92 @@
+﻿@model UserModel
+@{
+    ViewData["Title"] = "User_Edit";
+    IDAO Singleton = IDAO.Singleton;
+    UserModel user = Singleton.GetUserByEmail(User.Claims.First().Value);
+}
+
+<br>
+<div class="float-right">
+    @Html.ActionLink("Delete user", "Delete_User", "User", new { id = Model.ID }, new { @class = "btn btn-danger" })
+</div>
+
+<h1>User - Editor</h1>
+
+<form method="post" asp-controller="Picture" asp-action="Upload" enctype="multipart/form-data">
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <div class="custom-file">
+                <input type="hidden" name="type" value="user" />
+                <input type="hidden" name="id" value="@Model.ID" />
+                <input class="form-control custom-file-input" type="file" name="file" />
+                <label class="custom-file-label">Browse a picture to upload!</label>
+            </div>
+        </div>
+        <button class="btn btn-info" type="submit">Upload</button>
+
+    </div>
+</form>
+
+@using (Html.BeginForm("Editor", "User", FormMethod.Post))
+{
+    <div class="form-group">
+        <label for="">Name:</label>
+        @Html.TextBoxFor(m => m.Name, new { Name = "name", @class = "form-control", @required = "" })
+    </div>
+
+    <div class="form-group">
+        <label for="">E-mail:</label>
+        @Html.TextBoxFor(m => m.Email, new { Name = "email", @class = "form-control", @required = "" })
+    </div>
+
+    <div class="form-group">
+        <label for="">Password:</label>
+        @Html.TextBoxFor(m => m.Password, new { Name = "password", @type = "password", @class = "form-control", @required = "" })
+    </div>
+
+    <div class="form-group">
+        <label>Date of birth:</label><br>
+        <input type="date" name="birthdate"/>
+    </div>
+
+    <div class="form-group">
+        <label>Gender:</label><br>
+        <select name="gender">
+            <option value="@Singleton.GetFormattedGender(Model.Gender)">@Singleton.GetFormattedGender(Model.Gender)</option>
+            @if (Model.Gender == true)
+            {
+                <option value="Female">Female</option>
+                <option value="N/A">N/A</option>
+            }
+            else if (!Model.Gender == false)
+            {
+                <option value="Male">Male</option>
+                <option value="N/A">N/A</option>
+            }
+            else
+            {
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="">Wallet:</label><br>
+        <input type="number" name="wallet" placeholder="Currently you have $@Model.Wallet" width="150" required />
+    </div>
+
+    <div class="form-group">
+        <label>Introduction:</label><br>
+        <textarea name="introduction" cols="55" rows="5" required>@Model.Introduction</textarea>
+    </div>
+
+    <input type="hidden" name="id" value="@Model.ID" />
+    <button type="submit" class="btn btn-success">Done</button>
+
+    <div class="float-right">
+        <span>
+            @Html.ActionLink("Back", "Shop_Profile", "Shop", new { id = Model.ID }, new { @class = "btn btn-danger ml-auto mr-1" })
+        </span>
+    </div>
+}

@@ -25,11 +25,7 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <div class="float-left">
-                            @Html.ActionLink("Create shop", "Index", "Shop", null, new { @class = "nav-link text-dark btn btn-success mr-2" })
-                        </div>
-
-                        <div class="float-left">
-                            @Html.ActionLink("Shop list", "List", "Shop", null, new { @class = "nav-link text-dark btn btn-secondary mr-2" })
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ShopFuntionsModal">Shop functions</button>
                         </div>
                     }
                 </div>
@@ -57,14 +53,32 @@
                         </div>
                     }
                 </div>
-
             </nav>
         </div>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
+    </div>
+
+    <div class="modal fade" id="ShopFuntionsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Shop function list</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @Html.ActionLink("Create shop", "Index", "Shop", null, new { @class = "nav-link text-white btn btn-success mr-2" })
+                    @Html.ActionLink("Shop list", "List", "Shop", null, new { @class = "nav-link text-white btn btn-secondary mr-2" })
+                    @Html.ActionLink("Add vehicle", "Create", "Vehicle", null, new { @class = "nav-link text-white btn btn-dark mr-2" })
+                </div>
+            </div>
+        </div>
     </div>
 
     <footer class="border-top footer text-muted" style="background-color:black">
@@ -72,9 +86,11 @@
             &copy; 2020 - UsedCars - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
+
 </body>
 </html>

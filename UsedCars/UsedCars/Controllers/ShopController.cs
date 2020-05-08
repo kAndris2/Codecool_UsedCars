@@ -44,10 +44,10 @@ namespace UsedCars.Controllers
             return View("Shop_Profile", IDAO.GetShopByID(id));
         }
 
-        [HttpGet("Delete/{id}")]
-        public IActionResult Delete(int id)
+        [HttpGet("Delete_Shop/{id}")]
+        public IActionResult Delete_Shop(int id)
         {
-            IDAO.DeleteShop(id);
+            IDAO.Delete("shops", id);
             return View("List", IDAO);
         }
 

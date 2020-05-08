@@ -11,8 +11,8 @@ namespace UsedCars.Models
         public int Wallet { get; private set; }
         public int Views { get; private set; }
         public long Registration_Date { get; }
+        public long Birth_Date { get; private set; }
         public bool? Gender { get; private set; }
-        public DateTime Birth_Date { get; }
         public String Name { get; private set; }
         public String Email { get; private set; }
         public String Rank { get; private set; }
@@ -48,18 +48,16 @@ namespace UsedCars.Models
             Introduction = introduction;
         }
 
-        public DateTime GetDate() { return new DateTime(1970, 1, 1).AddMilliseconds(double.Parse(Registration_Date.ToString())); }
+        public String GetDate(long date) 
+        {
+            string result = new DateTime(1970, 1, 1).AddMilliseconds(double.Parse(date.ToString())).ToString();
+            if (result != "1/1/1970 12:00:00 AM")
+                return result;
+            return null;
+        }
 
-        public void IncreaseWalletAmount(int amount) { Wallet += amount; }
         public void DecreaseWalletAmount(int amount) { Wallet -= amount; }
         public void IncreaseViews() { Views++; }
-
-        public void SetGender(bool gender) { Gender = gender; }
-        public void SetName(string new_name) { Name = new_name; }
-        public void SetEmail(string new_email) { Email = new_email; }
-        public void SetPassword(string new_password) { Password = new_password; }
-        public void SetRank(string new_rank) { Rank = new_rank; }
-        public void SetIntroduction(string new_intro) { Introduction = new_intro; }
 
         public String GetFirstPicture() { return Pictures.Count == 0 ? null : Pictures[0].Route; }
 
@@ -69,5 +67,17 @@ namespace UsedCars.Models
         public void AddComment(CommentModel comment) { Comments.Add(comment); }
 
         public void RemoveShop(ShopModel shop) { Shops.Remove(shop); }
+        public void RemoveVehicle(VehicleModel vehicle) { Vehicles.Remove(vehicle); }
+
+        public void Update(string name, string email, string password, long milisec, bool? gender, int wallet, string introduction)
+        {
+            Name = name;
+            Email = email;
+            Password = password;
+            Birth_Date = milisec;
+            Gender = gender;
+            Wallet += wallet;
+            Introduction = introduction;
+        }
     }
 }

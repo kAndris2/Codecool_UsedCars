@@ -19,6 +19,7 @@ namespace UsedCars.Models
         public List<PictureModel> Pictures = new List<PictureModel>();
         public List<CommentModel> Comments = new List<CommentModel>();
         public List<PurchaseModel> Purchases = new List<PurchaseModel>();
+        public List<VehicleModel> Vehicles = new List<VehicleModel>();
 
         public ShopModel(int id, string name, string address, int ownerid, long regist)
         {
@@ -29,7 +30,7 @@ namespace UsedCars.Models
             Registration_Date = regist;
         }
 
-        public ShopModel(int id, string name, string description, /*DateTime foundation_date,*/ int ownerid, string address, int views)
+        public ShopModel(int id, string name, string description, /*DateTime foundation_date,*/ int ownerid, string address, int views, long regist)
         {
             ID = id;
             Name = name;
@@ -38,6 +39,7 @@ namespace UsedCars.Models
             Owner_ID = ownerid;
             Address = address;
             Views = views;
+            Registration_Date = regist;
         }
 
         public DateTime GetDate() { return new DateTime(1970, 1, 1).AddMilliseconds(double.Parse(Registration_Date.ToString())); }
@@ -57,5 +59,8 @@ namespace UsedCars.Models
         public void AddPicture(PictureModel picture) { Pictures.Add(picture); }
         public void AddComment(CommentModel comment) { Comments.Add(comment); }
         public void AddPurchase(PurchaseModel purchase) { Purchases.Add(purchase); }
+        public void AddVehicle(VehicleModel vehicle) { Vehicles.Add(vehicle); }
+
+        public void RemoveVehicle(VehicleModel vehicle) { Vehicles.Remove(vehicle); }
     }
 }

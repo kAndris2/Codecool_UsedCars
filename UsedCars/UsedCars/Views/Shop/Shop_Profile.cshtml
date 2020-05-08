@@ -5,32 +5,52 @@
     Singleton.UpdateViews("shops", Model.ID);
 }
 
-<div class="card">
+<link rel="stylesheet" href="~/css/slideshow.css" />
+
+<div class="slideshow-container">
     @if (Model.Pictures.Count >= 1)
     {
-        <img class="card-img-top" src="@Model.Pictures[0].Route" alt="Card image cap">
+        @for (int i = 0; i < Model.Pictures.Count; i++)
+        {
+            <div class="mySlides">
+                <div class="numbertext">@(i + 1) / @Model.Pictures.Count</div>
+                <img class="card-img-top" src="@Model.Pictures[i].Route" width="300" height="550">
+                <!--<div class="text">Caption Text</div>-->
+            </div>
+        }
+        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="next" onclick="plusSlides(1)">&#10095;</a>
     }
     else
     {
         <img class="card-img-top" src="~/pics/no_img.png" alt="Card image cap">
     }
 
-    <div class="card-img-overlay">
-        @Html.ActionLink("Edit", "Shop_Edit", "Shop", new { id = Model.ID }, new { @class = "btn btn-primary" })
-
-        <img src="~/pics/views.png" width="30" height="30">
-        <span class="badge badge-light">@Model.Views</span>
+    <br>
+    <div style="text-align:center">
+        @for (int i = 0; i < Model.Pictures.Count; i++)
+        {
+            <span class="dot" onclick="currentSlide(@i+1)"></span>
+        }
     </div>
 </div>
 
 <div class="card mb-3">
     <div class="card-body">
+
+        <div class="float-right">
+            @Html.ActionLink("Edit", "Shop_Edit", "Shop", new { id = Model.ID }, new { @class = "btn btn-primary" })
+
+            <img src="~/pics/views.png" width="30" height="30">
+            <span class="badge badge-light">@Model.Views</span>
+        </div>
+
         <h5 class="card-title">#@Model.ID - @Model.Name (@Model.Address)</h5>
 
         <p class="card-text">
             Owner:
             @Html.ActionLink(@Singleton.GetUserByID(Model.Owner_ID).Name,
-                             "User_Profile", "Profile", new { id = Model.Owner_ID })
+                                "User_Profile", "User", new { id = Model.Owner_ID })
         </p>
 
         <p class="card-text">
@@ -53,30 +73,31 @@
 
 <div class="float-right">
     <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal">Add comment</button>
-</div>
+</div><br><br>
 
 @foreach (CommentModel comment in Model.Comments)
 {
     <div class="media" style="background-color:white;">
-        
+
         <a href="@Url.Action("User_Profile", "Profile", new { id = comment.Owner_ID})">
             @if (Singleton.GetUserByID(comment.Owner_ID).Pictures.Count >= 1)
             {
-                <img class="mr-3" src="@Singleton.GetUserByID(comment.Owner_ID).Pictures[0].Route" width="70" height="64"/>
+                <img class="mr-3" src="@Singleton.GetUserByID(comment.Owner_ID).Pictures[0].Route" width="70" height="64" />
             }
             else
             {
-                <img class="mr-3" src="~/pics/no_img.png" width="70" height="64"/>
+                <img class="mr-3" src="~/pics/no_img.png" width="70" height="64" />
             }
         </a>
 
         <div class="media-body">
-            <h5 class="mt-0">#@Model.ID - @comment.Title</h5>
-             @comment.Message
+            <h5 class="mt-0">#@comment.ID - @comment.Title</h5>
+            @comment.Message
         </div>
 
         <p class="card-text"><small class="text-muted">@comment.GetDate()</small></p>
-    </div><br>
+    </div>
+    <br>
 }
 
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -110,14 +131,7 @@
     </div>
 </div>
 
-<script>
-    $('#exampleModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget) // Button that triggered the modal
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-  var modal = $(this)
-  modal.find('.modal-title').text('Add a comment!')
-  modal.find('.modal-body input').val(recipient)
-})
-</script>
+<script src="~/js/slideshow.js"></script>
+<script src="~/js/modals.js"></script>
+
 

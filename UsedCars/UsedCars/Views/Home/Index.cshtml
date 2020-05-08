@@ -12,9 +12,9 @@
                 <label>Brands:</label><br>
                 <select name="brand" style="width: 10em; background-color:black; color:orange;">
                     <option value="all">Never mind</option>
-                    @foreach (UserModel user in Model.Users)
+                    @foreach (ShopModel shop in Model.GetShops())
                     {
-                        foreach (VehicleModel vehicle in user.Vehicles)
+                        foreach (VehicleModel vehicle in shop.Vehicles)
                         {
                         <option value="@vehicle.Brand">"@Model.GetValueCount(vehicle.Brand, "brand")"</option>
                         }
@@ -26,9 +26,9 @@
                 <label>Models:</label><br>
                 <select name="model" style="width: 10em; background-color:black; color:orange;">
                     <option value="all">Never mind</option>
-                    @foreach (UserModel user in Model.Users)
+                    @foreach (ShopModel shop in Model.GetShops())
                     {
-                        foreach (VehicleModel vehicle in user.Vehicles)
+                        foreach (VehicleModel vehicle in shop.Vehicles)
                         {
                         <option value="@vehicle.Model">@Model.GetValueCount(vehicle.Model, "model")</option>
                         }
@@ -40,9 +40,9 @@
                 <label>Types:</label><br>
                 <select name="type" style="width: 10em; background-color:black; color:orange;">
                     <option value="all">Never mind</option>
-                    @foreach (UserModel user in Model.Users)
+                    @foreach (ShopModel shop in Model.GetShops())
                     {
-                        foreach (VehicleModel vehicle in user.Vehicles)
+                        foreach (VehicleModel vehicle in shop.Vehicles)
                         {
                         <option value="@vehicle.Type">@Model.GetValueCount(vehicle.Type, "type")</option>
                         }
@@ -54,9 +54,9 @@
                 <label>Fuels:</label><br>
                 <select name="fuel" style="width: 10em; background-color:black; color:orange;">
                     <option value="all">Never mind</option>
-                    @foreach (UserModel user in Model.Users)
+                    @foreach (ShopModel shop in Model.GetShops())
                     {
-                        foreach (VehicleModel vehicle in user.Vehicles)
+                        foreach (VehicleModel vehicle in shop.Vehicles)
                         {
                         <option value="@vehicle.Fuel">@Model.GetValueCount(vehicle.Fuel, "fuel")</option>
                         }
@@ -68,9 +68,9 @@
                 <label>Vintage (from to):</label><br>
                 <select name="vintage-from" style="background-color:black; color:orange;">
                     <option value="all">Never mind</option>
-                    @foreach (UserModel user in Model.Users)
+                    @foreach (ShopModel shop in Model.GetShops())
                     {
-                        foreach (VehicleModel vehicle in user.Vehicles)
+                        foreach (VehicleModel vehicle in shop.Vehicles)
                         {
                         <option value="@vehicle.Vintage">@vehicle.Vintage</option>
                         }
@@ -79,9 +79,9 @@
 
                 <select name="vintage-to" style="background-color:black; color:orange;">
                     <option value="all">Never mind</option>
-                    @foreach (UserModel user in Model.Users)
+                    @foreach (ShopModel shop in Model.GetShops())
                     {
-                        foreach (VehicleModel vehicle in user.Vehicles)
+                        foreach (VehicleModel vehicle in shop.Vehicles)
                         {
                             <option value="@vehicle.Vintage">@vehicle.Vintage</option>
                         }
