@@ -9,113 +9,113 @@
     <div class="container" style="background-color:white; width:1900px; border:1px solid black;">
         <form method="post" asp-action="Create_Vehicle" asp-controller="Vehicle">
 
-            <div class="row">
+			<div class="row">
 
-                <div class="col-sm-2">
-                    <label>
-                        <b>Brand:</b>
-                    </label><br>
-                    <input type="text" name="brand" required />
-                </div>
+				<div class="col-sm-2">
+					<label>
+						<b>Brand:</b>
+					</label><br>
+					<input type="text" name="brand" required />
+				</div>
 
-                <div class="col-sm-2">
-                    <label>
-                        <b>Model:</b>
-                    </label>
-                    <input type="text" name="model" required />
-                </div>
+				<div class="col-sm-2">
+					<label>
+						<b>Model:</b>
+					</label>
+					<input type="text" name="model" required />
+				</div>
 
-                <div class="col-sm-2">
-                    <label>
-                        <b>Type:</b>
-                    </label>
-                    <input type="text" name="type" required />
-                </div>
+				<div class="col-sm-2">
+					<label>
+						<b>Type:</b>
+					</label>
+					<input type="text" name="type" required />
+				</div>
 
-                <div class="col-sm-2">
-                    <label>
-                        <b>Fuel:</b>
-                    </label>
-                    <input type="text" name="fuel" required />
-                </div>
+				<div class="col-sm-2">
+					<label>
+						<b>Type designation:</b>
+					</label>
+					<input type="text" name="type_designation" required />
+				</div>
 
-                <div class="col-sm-2">
-                    <label>
-                        <b>Odometer:</b>
-                    </label>
-                    <input type="number" name="odometer" placeholder="km" required />
-                </div>
+				<div class="col-sm-2">
+					<label>
+						<b>Fuel:</b>
+					</label>
+					<input type="text" name="fuel" required />
+				</div>
 
-                <div class="col-sm-2">
-                    <label>
-                        <b>Vintage:</b>
-                    </label><br>
-                    <select name="year">
-                        @for (int i = 1970; i < DateTime.Now.Year + 1; i++)
-                        {
-                            <option value="@i">@i</option>
-                        }
-                    </select>
-                </div>
+				<div class="col-sm-2">
+					<label>
+						<b>Vintage:</b>
+					</label><br>
+					<select name="year">
+						@for (int i = 1970; i < DateTime.Now.Year + 1; i++)
+						{
+							<option value="@i">@i</option>
+						}
+					</select>
+				</div>
 
-                <div class="col-sm-1">
-                    <label>
-                        <b>Validity:</b>
-                    </label><br>
-                    <select name="validity">
-                        <option value="Valid">Valid</option>
-                        <option value="Invalid">Invalid</option>
-                    </select>
-                </div>
+				<div class="col-sm-1">
+					<label>
+						<b>Validity:</b>
+					</label><br>
+					<select name="validity">
+						<option value="Valid">Valid</option>
+						<option value="Invalid">Invalid</option>
+					</select>
+				</div>
 
-                <div class="col-sm-2">
-                    <label>
-                        <b>Price:</b>
-                    </label><br>
-                    <input type="number" name="price" placeholder="Ft" />
-                </div>
+				<div class="col-sm-2">
+					<label>
+						<b>Price:</b>
+					</label><br>
+					<input type="number" name="price" placeholder="Ft" />
+				</div>
 
-                <div class="col-sm-2">
-                    <label>
-                        <b>Cylinder capacity:</b>
-                    </label><br>
-                    <input type="number" name="cylinder" placeholder="cm3" />
-                </div>
+				<div class="col-sm-2">
+					<label>
+						<b>Cylinder capacity:</b>
+					</label><br>
+					<input type="number" name="cylinder" placeholder="cm3" />
+				</div>
 
-                <div class="col-sm-2">
-                    <label>
-                        <b>Performance:</b>
-                    </label><br>
-                    <input type="number" name="performance" placeholder="kW" />
-                </div>
+				<div class="col-sm-2">
+					<label>
+						<b>Performance:</b>
+					</label><br>
+					<input type="number" name="performance" placeholder="kW" />
+				</div>
 
-                <div class="col-sm-2">
-                    <label>
-                        <b>Type designation:</b>
-                    </label>
-                    <input type="text" name="type-designation" required />
-                </div>
+				<div class="col-sm-2">
+					<label>
+						<b>Odometer:</b>
+					</label>
+					<input type="number" name="odometer" placeholder="km" required />
+				</div>
 
-                <div class="col-sm-1">
-                    <label>
-                        <b>Shop:</b>
-                    </label><br>
-                    <select name="shopid">
-                        @foreach (ShopModel shop in user.Shops)
-                        {
-                            <option value="@shop.ID">@shop.Name</option>
-                        }
-                    </select>
-                </div>
+				<div class="col-sm-1">
+					<label>
+						<b>Shop:</b>
+					</label><br>
+					<select name="shopid">
+						@foreach (ShopModel shop in user.Shops)
+						{
+							<option value="@shop.ID">@shop.Name</option>
+						}
+					</select>
+				</div>
 
-                <div class="col-7">
-                    <label>
-                        <b>Description:</b>
-                    </label><br>
-                    <textarea name="description" cols="100" rows="7" required></textarea>
-                </div>
+				<div class="col-7">
+					<label>
+						<b>Description:</b>
+					</label><br>
+					<textarea name="description" cols="100" rows="7" required></textarea>
+				</div>
 
-            </div>
+			</div>
 
             <button type="submit" class="btn btn-success">Done</button>
 

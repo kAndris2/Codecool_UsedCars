@@ -122,14 +122,14 @@ namespace UsedCars
         }
 
         //-Vehicle FUNCTIONS------------------------------------------------------------------------------------------------
-        public void CreateVehicle(string brand, string model, string type, string fuel, int odometer, int vintage, bool validity, int price, int cylinder, int performance, int shopid, string description)
+        public void CreateVehicle(string brand, string model, string type, string fuel, string type_des, int odometer, int vintage, bool validity, int price, int cylinder, int performance, int shopid, string description)
         {
             int id = 0;
             long milisec = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             string sqlstr = "INSERT INTO vehicles " +
-                                "(brand, model, type, fuel, odometer, vintage, validity, price, cylinder_capacity, performance, shop_id, description, registration_date) " +
+                                "(brand, model, type, fuel, type_designation, odometer, vintage, validity, price, cylinder_capacity, performance, shop_id, description, registration_date) " +
                                 "VALUES " +
-                                    "(@brand, @model, @type, @fuel, @odometer, @vintage, @validity, @price, @cylinder, @performance, @shopid, @description, @register)";
+                                    "(@brand, @model, @type, @fuel, @type_designation, @odometer, @vintage, @validity, @price, @cylinder, @performance, @shopid, @description, @register)";
             using (var conn = new NpgsqlConnection(Program.ConnectionString))
             {
                 conn.Open();
@@ -139,6 +139,7 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("model", model);
                     cmd.Parameters.AddWithValue("type", type);
                     cmd.Parameters.AddWithValue("fuel", fuel);
+                    cmd.Parameters.AddWithValue("type_designation", type_des);
                     cmd.Parameters.AddWithValue("odometer", odometer);
                     cmd.Parameters.AddWithValue("vintage", vintage);
                     cmd.Parameters.AddWithValue("validity", validity);
@@ -162,6 +163,7 @@ namespace UsedCars
                 type,
                 price,
                 fuel,
+                type_des,
                 cylinder,
                 performance,
                 odometer,
@@ -193,7 +195,7 @@ namespace UsedCars
             }
         }
 
-        public void EditVehicle(int id, string brand, string model, string type, string fuel, int odometer, int vintage, bool validity, int price, int cylinder, int performance, string description)
+        public void EditVehicle(int id, string brand, string model, string type, string fuel, string type_des, int odometer, int vintage, bool validity, int price, int cylinder, int performance, string description)
         {
             string sqlstr = "UPDATE vehicles " +
                                 "SET brand = @brand, model = @model, type = @type, fuel = @fuel, odometer = @odometer, vintage = @vintage, " +
@@ -219,13 +221,13 @@ namespace UsedCars
                     cmd.ExecuteNonQuery();
                 }
             }
-            GetVehicleByID(id).Update(brand, model, type, fuel, odometer, vintage, validity, price, cylinder, performance, description);
+            GetVehicleByID(id).Update(brand, model, type, fuel, type_des, odometer, vintage, validity, price, cylinder, performance, description);
         }
 
         public List<VehicleModel> Search(string brand, string model, string type, string fuel, string tdes, string vfrom, string vto, int pfrom, int pto, int ofrom, int oto, int cfrom, int cto)
         {
             List<VehicleModel> Result = new List<VehicleModel>();
-            int maxPoints = 12;
+            int maxPoints = 13;
             int vehPoints = 0;
 
             foreach (VehicleModel vehicle in GetVehicles())
@@ -262,14 +264,13 @@ namespace UsedCars
                 else
                     vehPoints++;
 
-                /*
                 if (tdes != null)
                 {
-
+                    if (vehicle.Type_Designation.Contains(tdes))
+                        vehPoints++;
                 }
                 else
                     vehPoints++;
-                */
 
                 if (vfrom != "all")
                 {
@@ -792,6 +793,7 @@ namespace UsedCars
                         reader["type"].ToString(),
                         int.Parse(reader["price"].ToString()),
                         reader["fuel"].ToString(),
+                        reader["type_designation"].ToString(),
                         int.Parse(reader["cylinder_capacity"].ToString()),
                         int.Parse(reader["performance"].ToString()),
                         int.Parse(reader["odometer"].ToString()),

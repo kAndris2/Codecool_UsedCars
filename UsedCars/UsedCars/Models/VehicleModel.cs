@@ -12,7 +12,6 @@ namespace UsedCars.Models
         public String Type { get; private set; }
         public String Fuel { get; private set; }
         public String Description { get; private set; }
-        public String Type_Designation { get; private set; }
         public int ID { get; }
         public int Vintage { get; private set; }
         public int Price { get; private set; }
@@ -28,8 +27,9 @@ namespace UsedCars.Models
 
         public List<PictureModel> Pictures = new List<PictureModel>();
         public List<CommentModel> Comments = new List<CommentModel>();
+        public List<String> Type_Designation = new List<string>();
 
-        public VehicleModel(int id, string brand, string model, int vintage, string type, int price, string fuel, string type_dse, int cylinder, int performance, int odometer, string description, bool validity, int? shopid, int? userid, long register)
+        public VehicleModel(int id, string brand, string model, int vintage, string type, int price, string fuel, string type_des, int cylinder, int performance, int odometer, string description, bool validity, int? shopid, int? userid, long register)
         {
             ID = id;
             Brand = brand;
@@ -38,7 +38,7 @@ namespace UsedCars.Models
             Type = type;
             Price = price;
             Fuel = fuel;
-            Type_Designation = type_dse;
+            Type_Designation = type_des.Split(',').ToList();
             Cylinder_Capacity = cylinder;
             Performance = performance;
             Odometer = odometer;
@@ -58,7 +58,7 @@ namespace UsedCars.Models
             Type = type;
             Price = price;
             Fuel = fuel;
-            Type_Designation = type_des;
+            Type_Designation = type_des.Split(',').ToList();
             Cylinder_Capacity = cylinder;
             Performance = performance;
             Odometer = odometer;
@@ -92,7 +92,7 @@ namespace UsedCars.Models
             Cylinder_Capacity = cylinder;
             Performance = performance;
             Description = description;
-            Type_Designation = type_des;
+            Type_Designation = type_des.Split(',').ToList();
         }
 
         public void AddPicture(PictureModel picture) { Pictures.Add(picture); }

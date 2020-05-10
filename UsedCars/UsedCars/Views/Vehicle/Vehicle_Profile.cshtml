@@ -45,7 +45,7 @@
             <span class="badge badge-light">@Model.Views</span>
         </div>
 
-        <h5 class="card-title">#@Model.ID - @Model.Brand @Model.Model @Singleton.GetCapacity($"{Model.Cylinder_Capacity}")</h5>
+        <h5 class="card-title">#@Model.ID - @Model.Brand @Model.Model @Singleton.GetCapacity($"{Model.Cylinder_Capacity}") @string.Join(' ', Model.Type_Designation)</h5>
 
         @if (Model.User_ID != null)
         {
@@ -85,6 +85,7 @@
                 <li>@Model.Odometer km</li>
                 <li>@Model.Fuel</li>
                 <li>With @Model.GetValidity() documents!</li>
+                <li>@Model.Performance kW</li>
             </ul>
         </p>
 

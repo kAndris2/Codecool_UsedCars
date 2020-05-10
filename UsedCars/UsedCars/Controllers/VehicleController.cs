@@ -17,13 +17,14 @@ namespace UsedCars.Controllers
 
         [HttpPost]
         public IActionResult Create_Vehicle([FromForm(Name = "brand")] string brand, [FromForm(Name = "model")] string model, [FromForm(Name = "type")] string type, [FromForm(Name = "fuel")] string fuel,
-            [FromForm(Name = "odometer")] int odometer, [FromForm(Name = "year")] int year, [FromForm(Name = "validity")] string validity, [FromForm(Name = "price")] int price,
+            [FromForm(Name = "odometer")] int odometer, [FromForm(Name = "year")] int year, [FromForm(Name = "validity")] string validity, [FromForm(Name = "price")] int price, [FromForm(Name = "type_designation")] string type_des,
             [FromForm(Name = "cylinder")] int cylinder, [FromForm(Name = "performance")] int performance, [FromForm(Name = "shopid")] int shopid, [FromForm(Name = "description")] string description)
         {
             IDAO.CreateVehicle(brand,
                                model,
                                type,
                                fuel,
+                               type_des,
                                odometer,
                                year,
                                validity == "Valid",
@@ -50,7 +51,7 @@ namespace UsedCars.Controllers
 
         [HttpPost]
         public IActionResult Editor([FromForm(Name = "brand")] string brand, [FromForm(Name = "model")] string model, [FromForm(Name = "type")] string type, [FromForm(Name = "fuel")] string fuel,
-            [FromForm(Name = "odometer")] int odometer, [FromForm(Name = "year")] int year, [FromForm(Name = "validity")] string validity, [FromForm(Name = "price")] int price,
+            [FromForm(Name = "odometer")] int odometer, [FromForm(Name = "year")] int year, [FromForm(Name = "validity")] string validity, [FromForm(Name = "price")] int price, [FromForm(Name = "type_designation")] string type_des,
             [FromForm(Name = "cylinder")] int cylinder, [FromForm(Name = "performance")] int performance, [FromForm(Name = "description")] string description, [FromForm(Name = "id")] int id)
         {
             IDAO.EditVehicle(id,
@@ -58,6 +59,7 @@ namespace UsedCars.Controllers
                              model,
                              type,
                              fuel,
+                             type_des,
                              odometer,
                              year,
                              validity == "Valid",

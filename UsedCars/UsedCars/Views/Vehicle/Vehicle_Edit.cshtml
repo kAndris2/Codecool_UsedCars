@@ -52,16 +52,16 @@
 
         <div class="col-sm-2">
             <label>
-                <b>Fuel:</b>
+                <b>Type designation:</b>
             </label>
-            <input type="text" name="fuel" value="@Model.Fuel" required />
+            <input type="text" name="type_designation" value="@string.Join(',', Model.Type_Designation)" required />
         </div>
 
         <div class="col-sm-2">
             <label>
-                <b>Odometer:</b>
+                <b>Fuel:</b>
             </label>
-            <input type="number" name="odometer" value="@Model.Odometer" required />
+            <input type="text" name="fuel" value="@Model.Fuel" required />
         </div>
 
         <div class="col-sm-2">
@@ -120,6 +120,13 @@
                 <b>Performance:</b>
             </label><br>
             <input type="number" name="performance" value="@Model.Performance" />
+        </div>
+
+        <div class="col-sm-2">
+            <label>
+                <b>Odometer:</b>
+            </label>
+            <input type="number" name="odometer" value="@Model.Odometer" required />
         </div>
 
         <div class="col-9">
