@@ -9,64 +9,69 @@
         <div class="row">
 
             <div class="col-sm-2">
-                <label>Brands:</label><br>
-                <select name="brand" style="width: 10em; background-color:black; color:orange;">
+                <label>
+                    <b>Brands:</b>
+                </label><br>
+                <select name="brand" style="width: 10em;">
                     <option value="all">Never mind</option>
-                    @foreach (ShopModel shop in Model.GetShops())
+                    @foreach (KeyValuePair<string, int> item in Model.GetValueCount("brand"))
                     {
-                        foreach (VehicleModel vehicle in shop.Vehicles)
-                        {
-                        <option value="@vehicle.Brand">"@Model.GetValueCount(vehicle.Brand, "brand")"</option>
-                        }
+                        <option value="@item.Key">@item.Key (@item.Value)</option>
                     }
                 </select>
             </div>
 
             <div class="col-sm-2">
-                <label>Models:</label><br>
-                <select name="model" style="width: 10em; background-color:black; color:orange;">
+                <label>
+                    <b>Models:</b>
+                </label><br>
+                <select name="model" style="width: 10em;">
                     <option value="all">Never mind</option>
-                    @foreach (ShopModel shop in Model.GetShops())
+                    @foreach (KeyValuePair<string, int> item in Model.GetValueCount("model"))
                     {
-                        foreach (VehicleModel vehicle in shop.Vehicles)
-                        {
-                        <option value="@vehicle.Model">@Model.GetValueCount(vehicle.Model, "model")</option>
-                        }
+                        <option value="@item.Key">@item.Key (@item.Value)</option>
                     }
                 </select>
             </div>
 
             <div class="col-sm-2">
-                <label>Types:</label><br>
-                <select name="type" style="width: 10em; background-color:black; color:orange;">
+                <label>
+                    <b>Types:</b>
+                </label><br>
+                <select name="type" style="width: 10em;">
                     <option value="all">Never mind</option>
-                    @foreach (ShopModel shop in Model.GetShops())
+                    @foreach (KeyValuePair<string, int> item in Model.GetValueCount("type"))
                     {
-                        foreach (VehicleModel vehicle in shop.Vehicles)
-                        {
-                        <option value="@vehicle.Type">@Model.GetValueCount(vehicle.Type, "type")</option>
-                        }
+                        <option value="@item.Key">@item.Key (@item.Value)</option>
                     }
                 </select>
             </div>
 
             <div class="col-sm-2">
-                <label>Fuels:</label><br>
-                <select name="fuel" style="width: 10em; background-color:black; color:orange;">
+                <label>
+                    <b>Fuels:</b>
+                </label><br>
+                <select name="fuel" style="width: 10em;">
                     <option value="all">Never mind</option>
-                    @foreach (ShopModel shop in Model.GetShops())
+                    @foreach (KeyValuePair<string, int> item in Model.GetValueCount("fuel"))
                     {
-                        foreach (VehicleModel vehicle in shop.Vehicles)
-                        {
-                        <option value="@vehicle.Fuel">@Model.GetValueCount(vehicle.Fuel, "fuel")</option>
-                        }
+                        <option value="@item.Key">@item.Key (@item.Value)</option>
                     }
                 </select>
             </div>
 
             <div class="col-sm-3">
-                <label>Vintage (from to):</label><br>
-                <select name="vintage-from" style="background-color:black; color:orange;">
+                <label>
+                    <b>Type designation:</b>
+                </label>
+                <input type="text" name="type-designation" />
+            </div>
+
+            <div class="col-sm-3">
+                <label>
+                    <b>Vintage (from to):</b>
+                </label><br>
+                <select name="vintage-from">
                     <option value="all">Never mind</option>
                     @foreach (ShopModel shop in Model.GetShops())
                     {
@@ -77,7 +82,7 @@
                     }
                 </select>
 
-                <select name="vintage-to" style="background-color:black; color:orange;">
+                <select name="vintage-to">
                     <option value="all">Never mind</option>
                     @foreach (ShopModel shop in Model.GetShops())
                     {
@@ -89,28 +94,30 @@
                  </select>
             </div>
 
-        </div>
-
-        <div class="row">
-
             <div class="col-sm-3">
-                <label>Purchase price (from to):</label>
-                <input type="number" style="width: 7em; background-color:black; color:orange;" name="purchase-from" value="0" />
-                <input type="number" style="width: 7em; background-color:black; color:orange;" name="purchase-to" value="@Int32.MaxValue" />
+                <label>
+                    <b>Purchase price (from to):</b>
+                </label>
+                <input type="number" style="width: 7em;" name="purchase-from" placeholder="Ft" />
+                <input type="number" style="width: 7em;" name="purchase-to" placeholder="Ft" />
                 <br>
             </div>
 
             <div class="col-sm-3">
-                <label>Odometer reading (from to):</label><br>
-                <input type="number" style="width: 7em; background-color:black; color:orange;" name="odometer-from" value="0" />
-                <input type="number" style="width: 7em; background-color:black; color:orange;" name="odometer-to" value="@Int32.MaxValue" />
+                <label>
+                    <b>Odometer reading (from to):</b>
+                </label><br>
+                <input type="number" style="width: 7em;" name="odometer-from" placeholder="km" />
+                <input type="number" style="width: 7em;" name="odometer-to" placeholder="km" />
                 <br>
             </div>
 
             <div class="col-sm-3">
-                <label>Cylinder capacity (from to):</label><br>
-                <input type="number" style="width: 7em; background-color:black; color:orange;" name="cylinder-from" value="0" />
-                <input type="number" style="width: 7em; background-color:black; color:orange;" name="cylinder-to" value="@Int32.MaxValue" />
+                <label>
+                    <b>Cylinder capacity (from to):</b>
+                </label><br>
+                <input type="number" style="width: 7em;" name="cylinder-from" placeholder="cm3" />
+                <input type="number" style="width: 7em;" name="cylinder-to" placeholder="cm3" />
                 <br>
             </div>
 

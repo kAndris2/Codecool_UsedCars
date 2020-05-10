@@ -1,6 +1,6 @@
 ﻿@model UserModel
 @{
-    ViewData["Title"] = "User_Edit";
+    ViewData["Title"] = Model.Name;
     IDAO Singleton = IDAO.Singleton;
     UserModel user = Singleton.GetUserByEmail(User.Claims.First().Value);
 }
@@ -30,27 +30,37 @@
 @using (Html.BeginForm("Editor", "User", FormMethod.Post))
 {
     <div class="form-group">
-        <label for="">Name:</label>
+        <label for="">
+            <b>Name:</b>
+        </label>
         @Html.TextBoxFor(m => m.Name, new { Name = "name", @class = "form-control", @required = "" })
     </div>
 
     <div class="form-group">
-        <label for="">E-mail:</label>
+        <label for="">
+            <b>E-mail:</b>
+        </label>
         @Html.TextBoxFor(m => m.Email, new { Name = "email", @class = "form-control", @required = "" })
     </div>
 
     <div class="form-group">
-        <label for="">Password:</label>
+        <label for="">
+            <b>Password:</b>
+        </label>
         @Html.TextBoxFor(m => m.Password, new { Name = "password", @type = "password", @class = "form-control", @required = "" })
     </div>
 
     <div class="form-group">
-        <label>Date of birth:</label><br>
+        <label>
+            <b>Date of birth:</b>
+        </label><br>
         <input type="date" name="birthdate"/>
     </div>
 
     <div class="form-group">
-        <label>Gender:</label><br>
+        <label>
+            <b>Gender:</b>
+        </label><br>
         <select name="gender">
             <option value="@Singleton.GetFormattedGender(Model.Gender)">@Singleton.GetFormattedGender(Model.Gender)</option>
             @if (Model.Gender == true)
@@ -72,12 +82,16 @@
     </div>
 
     <div class="form-group">
-        <label for="">Wallet:</label><br>
+        <label for="">
+            <b>Wallet:</b>
+        </label><br>
         <input type="number" name="wallet" placeholder="Currently you have $@Model.Wallet" width="150" required />
     </div>
 
     <div class="form-group">
-        <label>Introduction:</label><br>
+        <label>
+            <b>Introduction:</b>
+        </label><br>
         <textarea name="introduction" cols="55" rows="5" required>@Model.Introduction</textarea>
     </div>
 

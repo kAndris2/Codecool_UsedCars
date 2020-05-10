@@ -122,14 +122,14 @@ namespace UsedCars
         }
 
         //-Vehicle FUNCTIONS------------------------------------------------------------------------------------------------
-        public void CreateVehicle(string brand, string model, string type, string fuel, int odometer, int vintage, bool validity, int price, int cylinder, int shopid, string description)
+        public void CreateVehicle(string brand, string model, string type, string fuel, int odometer, int vintage, bool validity, int price, int cylinder, int performance, int shopid, string description)
         {
             int id = 0;
             long milisec = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             string sqlstr = "INSERT INTO vehicles " +
-                                "(brand, model, type, fuel, odometer, vintage, validity, price, cylinder_capacity, shop_id, description, registration_date) " +
+                                "(brand, model, type, fuel, odometer, vintage, validity, price, cylinder_capacity, performance, shop_id, description, registration_date) " +
                                 "VALUES " +
-                                    "(@brand, @model, @type, @fuel, @odometer, @vintage, @validity, @price, @cylinder, @shopid, @description, @register)";
+                                    "(@brand, @model, @type, @fuel, @odometer, @vintage, @validity, @price, @cylinder, @performance, @shopid, @description, @register)";
             using (var conn = new NpgsqlConnection(Program.ConnectionString))
             {
                 conn.Open();
@@ -144,6 +144,7 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("validity", validity);
                     cmd.Parameters.AddWithValue("price", price);
                     cmd.Parameters.AddWithValue("cylinder", cylinder);
+                    cmd.Parameters.AddWithValue("performance", performance);
                     cmd.Parameters.AddWithValue("shopid", shopid);
                     cmd.Parameters.AddWithValue("description", description);
                     cmd.Parameters.AddWithValue("register", milisec);
@@ -162,6 +163,7 @@ namespace UsedCars
                 price,
                 fuel,
                 cylinder,
+                performance,
                 odometer,
                 description,
                 validity,
@@ -191,11 +193,11 @@ namespace UsedCars
             }
         }
 
-        public void EditVehicle(int id, string brand, string model, string type, string fuel, int odometer, int vintage, bool validity, int price, int cylinder, string description)
+        public void EditVehicle(int id, string brand, string model, string type, string fuel, int odometer, int vintage, bool validity, int price, int cylinder, int performance, string description)
         {
             string sqlstr = "UPDATE vehicles " +
-                                "SET brand = @brand, model = @model, type = @type, fuel = @fuel, odometer = @odometer, " +
-                                    "vintage = @vintage, validity = @validity, price = @price, cylinder_capacity = @cylinder, description = @description " +
+                                "SET brand = @brand, model = @model, type = @type, fuel = @fuel, odometer = @odometer, vintage = @vintage, " +
+                                    "validity = @validity, price = @price, cylinder_capacity = @cylinder, performance = @performance, description = @description " +
                                 "WHERE id = @id";
             using (var conn = new NpgsqlConnection(Program.ConnectionString))
             {
@@ -212,56 +214,133 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("validity", validity);
                     cmd.Parameters.AddWithValue("price", price);
                     cmd.Parameters.AddWithValue("cylinder", cylinder);
+                    cmd.Parameters.AddWithValue("performance", performance);
                     cmd.Parameters.AddWithValue("description", description);
                     cmd.ExecuteNonQuery();
                 }
             }
-            GetVehicleByID(id).Update(brand, model, type, fuel, odometer, vintage, validity, price, cylinder, description);
+            GetVehicleByID(id).Update(brand, model, type, fuel, odometer, vintage, validity, price, cylinder, performance, description);
         }
 
-        public List<VehicleModel> Search(string brand, string model, string type, string fuel, string vfrom, string vto, int pfrom, int pto, int ofrom, int oto, int cfrom, int cto)
+        public List<VehicleModel> Search(string brand, string model, string type, string fuel, string tdes, string vfrom, string vto, int pfrom, int pto, int ofrom, int oto, int cfrom, int cto)
         {
-            List<VehicleModel> Vehicles = GetVehicles();
+            List<VehicleModel> Result = new List<VehicleModel>();
+            int maxPoints = 12;
+            int vehPoints = 0;
 
-            foreach (VehicleModel vehicle in Vehicles)
+            foreach (VehicleModel vehicle in GetVehicles())
             {
-                if (brand != "all" && !vehicle.Brand.Equals(brand))
-                    Vehicles.Remove(vehicle);
+                if (brand != "all")
+                {
+                    if (vehicle.Brand.Equals(brand))
+                        vehPoints++;
+                }
+                else
+                    vehPoints++;
 
-                if (model != "all" && !vehicle.Model.Equals(model))
-                    Vehicles.Remove(vehicle);
+                if (model != "all")
+                {
+                    if (vehicle.Model.Equals(model))
+                        vehPoints++;
+                }
+                else
+                    vehPoints++;
 
-                if (type != "all" && !vehicle.Type.Equals(type))
-                    Vehicles.Remove(vehicle);
+                if (type != "all")
+                {
+                    if (vehicle.Type.Equals(type))
+                        vehPoints++;
+                }
+                else
+                    vehPoints++;
 
-                if (fuel != "all" && !vehicle.Fuel.Equals(fuel))
-                    Vehicles.Remove(vehicle);
+                if (fuel != "all")
+                {
+                    if (vehicle.Fuel.Equals(fuel))
+                        vehPoints++;
+                }
+                else
+                    vehPoints++;
 
-                if (vfrom != "all" && vehicle.Vintage < int.Parse(vfrom))
-                    Vehicles.Remove(vehicle);
+                /*
+                if (tdes != null)
+                {
 
-                if (vto != "all" && vehicle.Vintage > int.Parse(vto))
-                    Vehicles.Remove(vehicle);
+                }
+                else
+                    vehPoints++;
+                */
 
-                if (vehicle.Price < pfrom)
-                    Vehicles.Remove(vehicle);
+                if (vfrom != "all")
+                {
+                    if (vehicle.Vintage >= int.Parse(vfrom))
+                        vehPoints++;
+                }
+                else
+                    vehPoints++;
 
-                if (vehicle.Price > pto)
-                    Vehicles.Remove(vehicle);
+                if (vto != "all")
+                {
+                    if (vehicle.Vintage <= int.Parse(vto))
+                        vehPoints++;
+                }
+                else
+                    vehPoints++;
 
-                if (vehicle.Odometer < ofrom)
-                    Vehicles.Remove(vehicle);
+                if (pfrom != 0)
+                {
+                    if (vehicle.Price >= pfrom)
+                        vehPoints++;
+                }
+                else
+                    vehPoints++;
 
-                if (vehicle.Odometer > oto)
-                    Vehicles.Remove(vehicle);
+                if (pto != 0)
+                {
+                    if (vehicle.Price <= pto)
+                        vehPoints++;
+                }
+                else
+                    vehPoints++;
 
-                if (vehicle.Cylinder_Capacity < cfrom)
-                    Vehicles.Remove(vehicle);
+                if (ofrom != 0)
+                {
+                    if (vehicle.Odometer >= ofrom)
+                        vehPoints++;
+                }
+                else
+                    vehPoints++;
 
-                if (vehicle.Cylinder_Capacity > cto)
-                    Vehicles.Remove(vehicle);
+                if (oto != 0)
+                {
+                    if (vehicle.Odometer <= pto)
+                        vehPoints++;
+                }
+                else
+                    vehPoints++;
+
+                if (cfrom != 0)
+                {
+                    if (vehicle.Cylinder_Capacity >= cfrom)
+                        vehPoints++;
+                }
+                else
+                    vehPoints++;
+
+                if (oto != 0)
+                {
+                    if (vehicle.Cylinder_Capacity <= cto)
+                        vehPoints++;
+                }
+                else
+                    vehPoints++;
+
+                if (vehPoints == maxPoints)
+                    Result.Add(vehicle);
+
+                vehPoints = 0;
             }
-            return Vehicles;
+            return Result;
         }
 
         private List<VehicleModel> GetVehicles()
@@ -461,12 +540,12 @@ namespace UsedCars
             return Shops;
         }
 
-        public void EditShop(string name, string address, string description, int id)
+        public void EditShop(int id, string name, string address, string description, string webpage)
         {
-            GetShopByID(id).Update(name, address, description);
+            GetShopByID(id).Update(name, address, description, webpage);
             string sqlstr = "UPDATE shops " +
-                           "SET name = @name, address = @address, description = @description " +
-                           "WHERE id = @id";
+                                "SET name = @name, address = @address, description = @description, webpage = @webpage " +
+                            "WHERE id = @id";
             using (var conn = new NpgsqlConnection(Program.ConnectionString))
             {
                 conn.Open();
@@ -476,6 +555,7 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("name", name);
                     cmd.Parameters.AddWithValue("address", address);
                     cmd.Parameters.AddWithValue("description", description);
+                    cmd.Parameters.AddWithValue("webpage", webpage);
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -507,24 +587,45 @@ namespace UsedCars
         }
 
         //-Common FUNCTIONS---------------------------------------------------------------------------------------------------
-        public String GetValueCount(string title, string value)
+        public Dictionary<string, int> GetValueCount(string title)
         {
-            int count = 0;
+            Dictionary<string, int> data = new Dictionary<string, int>();
+
             foreach (ShopModel shop in GetShops())
             {
                 foreach (VehicleModel vehicle in shop.Vehicles)
                 {
-                    if (value == "brand" && vehicle.Brand.Equals(title))
-                        count++;
-                    else if (value == "model" && vehicle.Model.Equals(title))
-                        count++;
-                    else if (value == "type" && vehicle.Type.Equals(title))
-                        count++;
-                    else if (value == "fuel" && vehicle.Fuel.Equals(title))
-                        count++;
+                    if (title == "brand")
+                    {
+                        if (!data.ContainsKey(vehicle.Brand))
+                            data.Add(vehicle.Brand, 1);
+                        else
+                            data[vehicle.Brand]++;
+                    }
+                    else if (title == "model")
+                    {
+                        if (!data.ContainsKey(vehicle.Model))
+                            data.Add(vehicle.Model, 1);
+                        else
+                            data[vehicle.Model]++;
+                    }
+                    else if (title == "type")
+                    {
+                        if (!data.ContainsKey(vehicle.Type))
+                            data.Add(vehicle.Type, 1);
+                        else
+                            data[vehicle.Type]++;
+                    }
+                    else if (title == "fuel")
+                    {
+                        if (!data.ContainsKey(vehicle.Fuel))
+                            data.Add(vehicle.Fuel, 1);
+                        else
+                            data[vehicle.Fuel]++;
+                    }
                 }
             }
-            return $"{title}({count})";
+            return data;
         }
 
         public String GetLastIDFromTable(NpgsqlConnection connection, string table)
@@ -666,7 +767,8 @@ namespace UsedCars
                         int.Parse(reader["owner_id"].ToString()),
                         reader["address"].ToString(),
                         int.Parse(reader["views"].ToString()),
-                        Convert.ToInt64(reader["registration_date"].ToString())
+                        Convert.ToInt64(reader["registration_date"].ToString()),
+                        reader["webpage"].ToString()
                         );
                         GetUserByID(shop.Owner_ID).AddShop(shop);
                     }
@@ -691,6 +793,7 @@ namespace UsedCars
                         int.Parse(reader["price"].ToString()),
                         reader["fuel"].ToString(),
                         int.Parse(reader["cylinder_capacity"].ToString()),
+                        int.Parse(reader["performance"].ToString()),
                         int.Parse(reader["odometer"].ToString()),
                         reader["description"].ToString(),
                         CheckIntOrNull(reader["shop_id"].ToString()),

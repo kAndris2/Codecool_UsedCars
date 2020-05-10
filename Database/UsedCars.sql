@@ -22,9 +22,11 @@ CREATE TABLE public.vehicles
 	model character varying(20) not null,
 	vintage int not null,
 	type character varying(20) not null,
+	type_designation character varying(20) not null,
 	price int not null,
 	fuel character varying(20) not null,
 	cylinder_capacity int not null,
+	performance int not null,
 	odometer int not null,
 	description text not null,
 	shop_id int,
@@ -40,9 +42,9 @@ CREATE TABLE public.shops
 	name character varying(30) not null,
 	registration_date bigint not null,
 	description character varying(500),
-	foundation_date date,
 	owner_id int not null,
-	address character varying(30) not null,
+	address character varying(50) not null,
+	webpage character varying(30),
 	views int default 0
 );
 

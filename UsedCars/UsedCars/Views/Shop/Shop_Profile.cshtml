@@ -45,16 +45,27 @@
             <span class="badge badge-light">@Model.Views</span>
         </div>
 
-        <h5 class="card-title">#@Model.ID - @Model.Name (@Model.Address)</h5>
+        <h5 class="card-title">
+            #@Model.ID - 
+            @if (Model.WebPage != "")
+            {
+                <a href="@Model.WebPage">@Model.Name</a> 
+            }
+            else
+            {
+                @Model.Name
+            }
+            (@Model.Address)
+        </h5>
 
         <p class="card-text">
-            Owner:
+            <b>Owner:</b>
             @Html.ActionLink(@Singleton.GetUserByID(Model.Owner_ID).Name,
                                 "User_Profile", "User", new { id = Model.Owner_ID })
         </p>
 
         <p class="card-text">
-            Description:
+            <b>Description:</b>
             @if (Model.Description == "")
             {
                 <a>N/A</a>
@@ -79,7 +90,7 @@
 {
     <div class="media" style="background-color:white;">
 
-        <a href="@Url.Action("User_Profile", "Profile", new { id = comment.Owner_ID})">
+        <a href="@Url.Action("User_Profile", "User", new { id = comment.Owner_ID})">
             @if (Singleton.GetUserByID(comment.Owner_ID).Pictures.Count >= 1)
             {
                 <img class="mr-3" src="@Singleton.GetUserByID(comment.Owner_ID).Pictures[0].Route" width="70" height="64" />

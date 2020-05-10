@@ -1,6 +1,6 @@
 ﻿@model ShopModel
 @{
-    ViewData["Title"] = "Shop_Edit";
+    ViewData["Title"] = Model.Name;
 }
 
 <br>
@@ -28,18 +28,31 @@
 @using (Html.BeginForm("Editor", "Shop", FormMethod.Post))
 {
     <div class="form-group">
-        <label for="">Name:</label>
+        <label>
+            <b>Name:</b>
+        </label>
         @Html.TextBoxFor(m => m.Name, new { Name = "name", @class = "form-control", @required = "" })
     </div>
 
     <div class="form-group">
-        <label for="">Address:</label>
+        <label>
+            <b>Address:</b>
+        </label>
         @Html.TextBoxFor(m => m.Address, new { Name = "address", @class = "form-control", @required = "" })
     </div>
 
     <div class="form-group">
-        <label for="">Description:</label>
-        @Html.TextBoxFor(m => m.Description, new { Name = "description", @class = "form-control", @required = "" })
+        <label>
+            <b>Webpage:</b>
+        </label>
+        @Html.TextBoxFor(m => m.WebPage, new { Name = "webpage", @class = "form-control", @required = "" })
+    </div>
+
+    <div class="form-group">
+        <label>
+            <b>Description:</b>
+        </label><br>
+        <textarea name="description" cols="100" rows="7" required>@Model.Description</textarea>
     </div>
 
     <input type="hidden" name="id" value="@Model.ID" />

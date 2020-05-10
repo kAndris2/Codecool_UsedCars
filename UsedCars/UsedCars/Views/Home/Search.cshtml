@@ -28,12 +28,23 @@
                     @Html.ActionLink($"{vehicle.Brand} {vehicle.Model} {Singleton.GetCapacity($"{vehicle.Cylinder_Capacity}")}", "Vehicle_Profile", "Vehicle", new { id = vehicle.ID })
                 </h5>
 
-                <p>@vehicle.Fuel, @vehicle.Vintage, @vehicle.Odometer km</p>
-                <p>@vehicle.Description</p>
+                <p>
+                    @vehicle.Fuel, 
+                    @vehicle.Vintage,
+                    @vehicle.Cylinder_Capacity cm<sup>3</sup>,
+                    @vehicle.Performance kW,
+                    @vehicle.Odometer km
+                </p>
+
+                <span style="display:block;width:650px;overflow:hidden; white-space:nowrap;text-overflow:ellipsis;">
+                    @vehicle.Description
+                </span>
 
                 @if (Singleton.GetShopByID(int.Parse($"{vehicle.Shop_ID}")).Pictures.Count >= 1)
                 {
-                    <img class="ml-3 float-lg-right" src="@Singleton.GetShopByID(int.Parse($"{vehicle.Shop_ID}")).GetFirstPicture()" width="80" height="75">
+                    <a href="@Url.Action("Shop_Profile", "Shop", new { id = vehicle.Shop_ID})">
+                        <img class="ml-3 float-lg-right" src="@Singleton.GetShopByID(int.Parse($"{vehicle.Shop_ID}")).GetFirstPicture()" width="80" height="75">
+                    </a>
                 }
 
                 <p>(ID: @vehicle.ID)</p>

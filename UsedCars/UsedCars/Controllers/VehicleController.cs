@@ -18,7 +18,7 @@ namespace UsedCars.Controllers
         [HttpPost]
         public IActionResult Create_Vehicle([FromForm(Name = "brand")] string brand, [FromForm(Name = "model")] string model, [FromForm(Name = "type")] string type, [FromForm(Name = "fuel")] string fuel,
             [FromForm(Name = "odometer")] int odometer, [FromForm(Name = "year")] int year, [FromForm(Name = "validity")] string validity, [FromForm(Name = "price")] int price,
-            [FromForm(Name = "cylinder")] int cylinder, [FromForm(Name = "shopid")] int shopid, [FromForm(Name = "description")] string description)
+            [FromForm(Name = "cylinder")] int cylinder, [FromForm(Name = "performance")] int performance, [FromForm(Name = "shopid")] int shopid, [FromForm(Name = "description")] string description)
         {
             IDAO.CreateVehicle(brand,
                                model,
@@ -29,6 +29,7 @@ namespace UsedCars.Controllers
                                validity == "Valid",
                                price,
                                cylinder,
+                               performance,
                                shopid,
                                description);
 
@@ -50,7 +51,7 @@ namespace UsedCars.Controllers
         [HttpPost]
         public IActionResult Editor([FromForm(Name = "brand")] string brand, [FromForm(Name = "model")] string model, [FromForm(Name = "type")] string type, [FromForm(Name = "fuel")] string fuel,
             [FromForm(Name = "odometer")] int odometer, [FromForm(Name = "year")] int year, [FromForm(Name = "validity")] string validity, [FromForm(Name = "price")] int price,
-            [FromForm(Name = "cylinder")] int cylinder, [FromForm(Name = "description")] string description, [FromForm(Name = "id")] int id)
+            [FromForm(Name = "cylinder")] int cylinder, [FromForm(Name = "performance")] int performance, [FromForm(Name = "description")] string description, [FromForm(Name = "id")] int id)
         {
             IDAO.EditVehicle(id,
                              brand,
@@ -62,6 +63,7 @@ namespace UsedCars.Controllers
                              validity == "Valid",
                              price,
                              cylinder,
+                             performance,
                              description);
             return View("Vehicle_Profile", IDAO.GetVehicleByID(id));
         }

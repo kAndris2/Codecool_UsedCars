@@ -27,9 +27,9 @@ namespace UsedCars.Controllers
         public IActionResult Search([FromQuery(Name = "brand")] string brand, [FromQuery(Name = "model")] string model, [FromQuery(Name = "type")] string type,
             [FromQuery(Name = "fuel")] string fuel, [FromQuery(Name = "vintage-from")] string vfrom, [FromQuery(Name = "vintage-to")] string vto,
             [FromQuery(Name = "purchase-from")] int pfrom, [FromQuery(Name = "purchase-to")] int pto, [FromQuery(Name = "odometer-from")] int ofrom,
-            [FromQuery(Name = "odometer-to")] int oto, [FromQuery(Name = "cylinder-from")] int cfrom, [FromQuery(Name = "cylinder-to")] int cto)
+            [FromQuery(Name = "odometer-to")] int oto, [FromQuery(Name = "cylinder-from")] int cfrom, [FromQuery(Name = "cylinder-to")] int cto, [FromForm(Name = "type-designation")] string tdes)
         {
-            return View(IDAO.Search(brand, model, type, fuel, vfrom, vto, pfrom, pto, ofrom, oto, cfrom, cto));
+            return View(IDAO.Search(brand, model, type, fuel, tdes, vfrom, vto, pfrom, pto, ofrom, oto, cfrom, cto));
         }
     }
 }

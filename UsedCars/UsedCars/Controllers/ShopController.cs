@@ -38,9 +38,9 @@ namespace UsedCars.Controllers
             return View(IDAO.GetShopByID(id));
         }
 
-        public IActionResult Editor([FromForm(Name = "name")] string name, [FromForm(Name = "address")] string address, [FromForm(Name = "description")] string description, [FromForm(Name = "id")] int id)
+        public IActionResult Editor([FromForm(Name = "name")] string name, [FromForm(Name = "address")] string address, [FromForm(Name = "description")] string description, [FromForm(Name = "id")] int id, [FromForm(Name = "webpage")] string webpage)
         {
-            IDAO.EditShop(name, address, description, id);
+            IDAO.EditShop(id, name, address, description, webpage);
             return View("Shop_Profile", IDAO.GetShopByID(id));
         }
 
