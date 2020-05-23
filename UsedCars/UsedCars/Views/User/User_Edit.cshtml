@@ -85,14 +85,14 @@
         <label for="">
             <b>Wallet:</b>
         </label><br>
-        <input type="number" name="wallet" placeholder="Currently you have $@Model.Wallet" width="150" required />
+        <input type="number" name="wallet" placeholder="You have: @string.Format("{0:C}", Model.Wallet)" width="150" />
     </div>
 
     <div class="form-group">
         <label>
             <b>Introduction:</b>
         </label><br>
-        <textarea name="introduction" cols="55" rows="5" required>@Model.Introduction</textarea>
+        <textarea name="introduction" cols="55" rows="5">@Model.Introduction</textarea>
     </div>
 
     <input type="hidden" name="id" value="@Model.ID" />
@@ -100,7 +100,7 @@
 
     <div class="float-right">
         <span>
-            @Html.ActionLink("Back", "Shop_Profile", "Shop", new { id = Model.ID }, new { @class = "btn btn-danger ml-auto mr-1" })
+            @Html.ActionLink("Back", "User_Profile", "User", new { id = Model.ID }, new { @class = "btn btn-danger ml-auto mr-1" })
         </span>
     </div>
 }

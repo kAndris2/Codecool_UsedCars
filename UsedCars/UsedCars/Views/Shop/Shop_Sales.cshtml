@@ -1,0 +1,52 @@
+﻿@model ShopModel
+@{
+    ViewData["Title"] = $"Sales of {Model.Name}";
+    IDAO Singleton = IDAO.Singleton;
+}
+
+    <h1 class="card-text">
+        Sales of
+        @Html.ActionLink(Model.Name, "Shop_Profile", "Shop", new { id = Model.ID })
+        :
+    </h1>
+
+    <table class="table table-striped table-dark">
+        <thead class="thead-dark">
+            <tr>
+                <th class="th-sm text-center">Year</th>
+                <th class="th-sm text-center">Quantity</th>
+                <th class="th-sm text-center">Total amount</th>
+            </tr>
+        </thead>
+        @foreach (PurchaseModel purchase in Singleton.GetFormattedPurchases(Model.ID))
+        {
+            <tr>
+                <td class="text-center">@purchase.Year</td>
+                <td class="text-center">@Singleton.GetPurchases(purchase.Year).Count</td>
+                <td class="text-center">@purchase.Amount</td>
+            </tr>
+        }
+    </table>
+
+    <h1>Total sales: @Model.Purchases.Count</h1>
+    <h1>Total amount: @string.Format("{0:C}", Singleton.GetTotalAmount(Model.ID))</h1>
+    
+    <table class="table table-striped table-dark">
+        <thead class="thead-dark">
+            <tr>
+                <th class="th-sm text-center">#ID</th>
+                <th class="th-sm text-center">Year</th>
+                <th class="th-sm text-center">Amount</th>
+                <th class="th-sm text-center">Brand</th>
+            </tr>
+        </thead>
+        @foreach (PurchaseModel purchase in Model.Purchases)
+        {
+            <tr>
+                <td class="text-center">@purchase.ID</td>
+                <td class="text-center">@purchase.Year</td>
+                <td class="text-center">@purchase.Amount</td>
+                <td class="text-center">@purchase.Brand</td>
+            </tr>
+        }
+    </table>

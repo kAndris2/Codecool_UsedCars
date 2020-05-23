@@ -84,6 +84,17 @@ CREATE TABLE public.races
 	type character varying(20) not null
 );
 
+CREATE TABLE public.likes
+(
+	id serial not null,
+	owner_id int not null,
+	submission_time bigint not null,
+	user_id int,
+	shop_id int,
+	vehicle_id int,
+	comment_id int
+);
+
 --ADD PRIMARY KEY...........................................................................................
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
@@ -105,6 +116,9 @@ ALTER TABLE ONLY public.pictures
 
 ALTER TABLE ONLY public.races
     ADD CONSTRAINT races_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.likes
+    ADD CONSTRAINT likes_pkey PRIMARY KEY (id);
 
 --ADD FOREIGN KEY...........................................................................................
 ALTER TABLE ONLY public.vehicles
@@ -135,3 +149,12 @@ ALTER TABLE ONLY public.pictures
     ADD CONSTRAINT vehicle_id FOREIGN KEY (vehicle_id) REFERENCES public.vehicles(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pictures
     ADD CONSTRAINT shop_id FOREIGN KEY (shop_id) REFERENCES public.shops(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY public.likes
+    ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.likes
+    ADD CONSTRAINT vehicle_id FOREIGN KEY (vehicle_id) REFERENCES public.vehicles(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.likes
+    ADD CONSTRAINT shop_id FOREIGN KEY (shop_id) REFERENCES public.shops(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.likes
+    ADD CONSTRAINT comment_id FOREIGN KEY (comment_id) REFERENCES public.comments(id) ON DELETE CASCADE;

@@ -10,9 +10,9 @@ namespace UsedCars.Controllers
     {
         public IDAO IDAO = IDAO.Singleton;
 
-        public ActionResult Index()
+        public ActionResult Index([FromRoute(Name = "id")] int id)
         {
-            return View();
+            return View("User_Profile", IDAO.GetUserByID(id));
         }
 
         [HttpGet("User_Profile/{id}")]
@@ -40,6 +40,18 @@ namespace UsedCars.Controllers
 
             IDAO.EditUser(id, name, email, password, birth, genderValue, wallet, introduction);
             return View("User_Profile", IDAO.GetUserByID(id));
+        }
+
+        [HttpPost]
+        public IActionResult User_Comment([FromForm(Name = "title")] string title, [FromForm(Name = "message")] string message, [FromForm(Name = "ownerid")] int ownerid, [FromForm(Name = "userid")] int userid)
+        {
+            IDAO.CreateComment("user", userid, title, message, ownerid);
+            return View("User_Profile", IDAO.GetUserByID(userid));
+        }
+
+        public IActionResult User_Garage([FromForm(Name = "userid")] int userid)
+        {
+            return View(IDAO.GetUserByID(userid));
         }
     }
 }

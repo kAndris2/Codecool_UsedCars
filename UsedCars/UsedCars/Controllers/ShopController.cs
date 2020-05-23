@@ -57,5 +57,15 @@ namespace UsedCars.Controllers
             IDAO.CreateComment("shop", shopid, title, message, ownerid);
             return View("Shop_Profile", IDAO.GetShopByID(shopid));
         }
+
+        public IActionResult Shop_Garage([FromForm(Name = "shopid")] int shopid)
+        {
+            return View(IDAO.GetShopByID(shopid));
+        }
+
+        public IActionResult Shop_Sales([FromForm(Name = "shopid")] int shopid)
+        {
+            return View(IDAO.GetShopByID(shopid));
+        }
     }
 }

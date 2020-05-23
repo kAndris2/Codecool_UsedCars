@@ -63,9 +63,13 @@ namespace UsedCars
 
         public void EditUser(int id, string name, string email, string password, string birth, bool? gender, int wallet, string introduction)
         {
+            long milisec = 0;
+            if (birth != null)
+            {
+                DateTime date = DateTime.ParseExact(birth.Replace("-", "/"), "yyyy/MM/dd", CultureInfo.InvariantCulture);
+                milisec = (long)(date - new DateTime(1970, 1, 1)).TotalMilliseconds;
+            }
             UserModel user = GetUserByID(id);
-            DateTime date = DateTime.ParseExact(birth.Replace("-", "/"), "yyyy/MM/dd", CultureInfo.InvariantCulture);
-            long milisec = (long)(date - new DateTime(1970, 1, 1)).TotalMilliseconds;
             user.Update(name, email, password, milisec, gender, wallet, introduction);
 
             string sqlstr = "UPDATE users " +
@@ -80,10 +84,10 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("name", name);
                     cmd.Parameters.AddWithValue("email", email);
                     cmd.Parameters.AddWithValue("password", password);
-                    cmd.Parameters.AddWithValue("birth", milisec);
+                    cmd.Parameters.AddWithValue("birth", birth == null ? GiveDBNull() : milisec);
                     cmd.Parameters.AddWithValue("gender", gender == null ? GiveDBNull() : gender);
                     cmd.Parameters.AddWithValue("wallet", user.Wallet);
-                    cmd.Parameters.AddWithValue("introduction", introduction);
+                    cmd.Parameters.AddWithValue("introduction", introduction == null ? GiveDBNull() : introduction);
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -109,19 +113,59 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("rank", "Member");
                     cmd.ExecuteNonQuery();
                 }
-                using (var cmd = new NpgsqlCommand("SELECT * FROM users", conn))
-                {
-                    var reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        id = int.Parse(reader["id"].ToString());
-                    }
-                }
+                id = int.Parse(GetLastIDFromTable(conn, "users"));
             }
             Users.Add(new UserModel(id, name, milisec, email, password));
         }
 
+        public void UpdateWallet(int id, int price)
+        {
+            UserModel user = GetUserByID(id);
+            user.DecreaseWalletAmount(price);
+            //
+            string sqlstr = "UPDATE users " +
+                                "SET wallet = @wallet " +
+                            "WHERE id = @id";
+            using (var conn = new NpgsqlConnection(Program.ConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sqlstr, conn))
+                {
+                    cmd.Parameters.AddWithValue("id", id);
+                    cmd.Parameters.AddWithValue("wallet", user.Wallet);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         //-Vehicle FUNCTIONS------------------------------------------------------------------------------------------------
+        public void BuyVehicle(int id, int userid, int shopid)
+        {
+            string sqlstr = "UPDATE vehicles " +
+                                "SET shop_id = @shopid, user_id = @userid " +
+                            "WHERE id = @id";
+            using (var conn = new NpgsqlConnection(Program.ConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sqlstr, conn))
+                {
+                    cmd.Parameters.AddWithValue("id", id);
+                    cmd.Parameters.AddWithValue("shopid", DBNull.Value);
+                    cmd.Parameters.AddWithValue("userid", userid);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            VehicleModel vehicle = GetVehicleByID(id);
+            GetShopByID(shopid).RemoveVehicle(vehicle);
+            //
+            vehicle.Buyed(userid);
+            GetUserByID(userid).AddVehicle(vehicle);
+            //
+            UpdateWallet(userid, vehicle.Price);
+            //
+            CreatePurchase(shopid, vehicle.Brand, vehicle.Price);
+        }
+        
         public void CreateVehicle(string brand, string model, string type, string fuel, string type_des, int odometer, int vintage, bool validity, int price, int cylinder, int performance, int shopid, string description)
         {
             int id = 0;
@@ -129,7 +173,7 @@ namespace UsedCars
             string sqlstr = "INSERT INTO vehicles " +
                                 "(brand, model, type, fuel, type_designation, odometer, vintage, validity, price, cylinder_capacity, performance, shop_id, description, registration_date) " +
                                 "VALUES " +
-                                    "(@brand, @model, @type, @fuel, @type_designation, @odometer, @vintage, @validity, @price, @cylinder, @performance, @shopid, @description, @register)";
+                                "(@brand, @model, @type, @fuel, @type_designation, @odometer, @vintage, @validity, @price, @cylinder, @performance, @shopid, @description, @register)";
             using (var conn = new NpgsqlConnection(Program.ConnectionString))
             {
                 conn.Open();
@@ -230,7 +274,7 @@ namespace UsedCars
             int maxPoints = 13;
             int vehPoints = 0;
 
-            foreach (VehicleModel vehicle in GetVehicles())
+            foreach (VehicleModel vehicle in GetVehicles(true))
             {
                 if (brand != "all")
                 {
@@ -344,7 +388,13 @@ namespace UsedCars
             return Result;
         }
 
-        private List<VehicleModel> GetVehicles()
+        /// <summary>
+        /// true = only search in the shops.
+        /// false = search all.
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <returns></returns>
+        private List<VehicleModel> GetVehicles(bool mode)
         {
             List<VehicleModel> Vehicles = new List<VehicleModel>();
 
@@ -354,6 +404,9 @@ namespace UsedCars
                 {
                     Vehicles.AddRange(shop.Vehicles);
                 }
+
+                if (!mode)
+                    Vehicles.AddRange(user.Vehicles);
             }
 
             return Vehicles;
@@ -361,21 +414,31 @@ namespace UsedCars
 
         public VehicleModel GetVehicleByID(int id)
         {
+            VehicleModel vehicle = null;
+
             foreach (UserModel user in Users)
             {
                 if (user.Vehicles.Count >= 1)
                 {
-                    user.Vehicles.FirstOrDefault(v => v.ID == id);
+                    vehicle = user.Vehicles.FirstOrDefault(v => v.ID == id);
                 }
-                foreach (ShopModel shop in user.Shops)
+            }
+
+            if (vehicle == null)
+            {
+                foreach (ShopModel shop in GetShops())
                 {
                     if (shop.Vehicles.Count >= 1)
                     {
-                        return shop.Vehicles.FirstOrDefault(v => v.ID == id);
+                        vehicle = shop.Vehicles.FirstOrDefault(v => v.ID == id);
                     }
                 }
             }
-            throw new ArgumentException($"Invalid Vehicle ID! - ('{id}')");
+
+            if (vehicle == null)
+                throw new ArgumentException($"Invalid Vehicle ID! - ('{id}')");
+            else
+                return vehicle;
         }
 
         public String GetCapacity(string value)
@@ -390,6 +453,90 @@ namespace UsedCars
                     result += value[i];
                     break;
                 }
+            }
+            return result;
+        }
+
+        //-Purchase FUNCTIONS----------------------------------------------------------------------------------
+        public void CreatePurchase(int shopid, string brand, int amount)
+        {
+            int id = 0;
+            int year = DateTime.Now.Year;
+            string sqlstr = "INSERT INTO purchases " +
+                                "(shop_id, amount, year, brand) " +
+                                "VALUES " +
+                                    "(@shopid, @amount, @year, @brand)";
+            using (var conn = new NpgsqlConnection(Program.ConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sqlstr, conn))
+                {
+                    cmd.Parameters.AddWithValue("shopid", shopid);
+                    cmd.Parameters.AddWithValue("amount", amount);
+                    cmd.Parameters.AddWithValue("year", year);
+                    cmd.Parameters.AddWithValue("brand", brand);
+                    cmd.ExecuteNonQuery();
+                }
+                id = int.Parse(GetLastIDFromTable(conn, "purchases"));
+            }
+            GetShopByID(shopid).AddPurchase(new PurchaseModel(id, shopid, amount, year, brand));
+        }
+
+        public List<PurchaseModel> GetFormattedPurchases(int shopid)
+        {
+            List<PurchaseModel> purchases = new List<PurchaseModel>();
+
+            foreach (PurchaseModel purchase in GetShopByID(shopid).Purchases)
+            {
+                if (purchases.Count >= 1)
+                {
+                    foreach (PurchaseModel item in purchases)
+                    {
+                        if (purchase.Year == item.Year)
+                        {
+                            item.Amount += purchase.Amount;
+                        }
+                        else
+                        {
+                            purchases.Add((PurchaseModel)purchase.Clone());
+                        }
+                    }
+                }
+                else
+                    purchases.Add((PurchaseModel)purchase.Clone());
+            }
+            return purchases;
+        }
+
+        public List<PurchaseModel> GetPurchases(int year)
+        {
+            List<PurchaseModel> Purchases = new List<PurchaseModel>();
+
+            foreach (UserModel user in Users)
+            {
+                foreach (ShopModel shop in user.Shops)
+                {
+                    if (shop.Purchases.Count >= 1)
+                    {
+                        foreach (PurchaseModel purchase in shop.Purchases)
+                        {
+                            if (year == purchase.Year || year == -1)
+                                Purchases.Add(purchase);
+                        }
+                    }
+                }
+            }
+            return Purchases;
+        }
+
+        public int GetTotalAmount(int shopid)
+        {
+            int result = 0;
+
+            foreach (PurchaseModel purchase in GetPurchases(-1))
+            {
+                if (purchase.Shop_ID == shopid)
+                    result += purchase.Amount;
             }
             return result;
         }
@@ -464,6 +611,50 @@ namespace UsedCars
             }
         }
 
+        public String LineBreak(string text)
+        {
+            string result = "";
+            int breakAt = 100,
+                count = 0; 
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                count++;
+                if (count == breakAt)
+                {
+                    result += text[i] + "\n";
+                    count = 0;
+                }
+                else
+                    result += text[i];
+            }
+            return result;
+        }
+
+        public List<CommentModel> GetComments()
+        {
+            List<CommentModel> comments = new List<CommentModel>();
+
+            foreach (UserModel user in Users)
+            {
+                comments.AddRange(user.Comments);
+            }
+            foreach (VehicleModel vehicle in GetVehicles(false))
+            {
+                comments.AddRange(vehicle.Comments);
+            }
+            foreach (ShopModel shop in GetShops())
+            {
+                comments.AddRange(shop.Comments);
+            }
+            return comments;
+        }
+
+        public CommentModel GetCommentByID(int id)
+        {
+            return GetComments().FirstOrDefault(c => c.ID == id);
+        }
+
         //-Picture FUNCTIONS------------------------------------------------------------------------------------------------
         public void CreatePicture(string route, string table_name, int? ownerid)
         {
@@ -516,6 +707,11 @@ namespace UsedCars
         }
 
         //-SHOP FUNCTIONS---------------------------------------------------------------------------------------------------
+        public UserModel GetShopOwner(int? shopid)
+        {
+            return GetUserByID(GetShopByID(int.Parse($"{shopid}")).Owner_ID);
+        }
+        
         public ShopModel GetShopByID(int id)
         {
             foreach (UserModel user in Users)
@@ -585,6 +781,180 @@ namespace UsedCars
                 id = int.Parse(GetLastIDFromTable(conn, "shops"));
             }
             owner.AddShop(new ShopModel(id, name, address, owner.ID, milisec));
+        }
+
+        //-Like FUNCTIONS---------------------------------------------------------------------------------------------------
+        private void AddLikeTo(LikeModel like)
+        {
+            if (like.User_ID != null)
+            {
+                foreach (UserModel user in Users)
+                {
+                    if (user.ID == like.User_ID)
+                        user.AddLike(like);
+                }
+            }
+            else if (like.Vehicle_ID != null)
+            {
+                foreach (VehicleModel vehicle in GetVehicles(false))
+                {
+                    if (vehicle.ID == like.Vehicle_ID)
+                        vehicle.AddLike(like);
+                }
+            }
+            else if (like.Shop_ID != null)
+            {
+                foreach (ShopModel shop in GetShops())
+                {
+                    if (shop.ID == like.Shop_ID)
+                        shop.AddLike(like);
+                }
+            }
+            else if (like.Comment_ID != null)
+            {
+                foreach (CommentModel comment in GetComments())
+                {
+                    if (comment.ID == like.Comment_ID)
+                        comment.AddLike(like);
+                }
+            }
+        }
+
+        public List<LikeModel> GetLikes()
+        {
+            List<LikeModel> Likes = new List<LikeModel>();
+
+            foreach (UserModel user in Users)
+            {
+                Likes.AddRange(user.Likes);
+            }
+            foreach (VehicleModel vehicle in GetVehicles(false))
+            {
+                Likes.AddRange(vehicle.Likes);
+            }
+            foreach (ShopModel shop in GetShops())
+            {
+                Likes.AddRange(shop.Likes);
+            }
+            foreach (CommentModel comment in GetComments())
+            {
+                Likes.AddRange(comment.Likes);
+            }
+
+            return Likes;
+        }
+
+        public bool UserIsLikedThis(int userid, int itemid, string itemname)
+        {
+            foreach (LikeModel like in GetLikes())
+            {
+                if (itemname == "user" && like.Owner_ID == userid && like.User_ID == itemid ||
+                    itemname == "shop" && like.Owner_ID == userid && like.Shop_ID == itemid ||
+                    itemname == "vehicle" && like.Owner_ID == userid && like.Vehicle_ID == itemid ||
+                    itemname == "comment" && like.Owner_ID == userid && like.Comment_ID == itemid)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void CreateLike(int ownerid, int? itemid, string itemname)
+        {
+            int id = 0;
+            long milisec = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            string sqlstr = "INSERT INTO likes " +
+                                "(owner_id, submission_time, user_id, shop_id, vehicle_id, comment_id) " +
+                                "VALUES " +
+                                    "(@ownerid, @date, @userid, @shopid, @vehicleid, @commentid)";
+            using (var conn = new NpgsqlConnection(Program.ConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sqlstr, conn))
+                {
+                    cmd.Parameters.AddWithValue("ownerid", ownerid);
+                    cmd.Parameters.AddWithValue("date", milisec);
+                    cmd.Parameters.AddWithValue("userid", itemname == "user" ? itemid : GiveDBNull());
+                    cmd.Parameters.AddWithValue("shopid", itemname == "shop" ? itemid : GiveDBNull());
+                    cmd.Parameters.AddWithValue("vehicleid", itemname == "vehicle" ? itemid : GiveDBNull());
+                    cmd.Parameters.AddWithValue("commentid", itemname == "comment" ? itemid : GiveDBNull());
+                    cmd.ExecuteNonQuery();
+                }
+                id = int.Parse(GetLastIDFromTable(conn, "likes"));
+            }
+            AddLikeTo
+            (
+                new LikeModel
+                (
+                    id,
+                    ownerid,
+                    milisec,
+                    itemname == "user" ? itemid : null,
+                    itemname == "shop" ? itemid : null,
+                    itemname == "vehicle" ? itemid : null,
+                    itemname == "comment" ? itemid : null
+                )
+            );
+        }
+
+        public void DeleteLike(int ownerid, int itemid, string itemname)
+        {
+            LikeModel like = GetLike(ownerid, itemid, itemname);
+            Delete("likes", like.ID);
+        }
+
+        private LikeModel GetLikeByID(int id)
+        {
+            return GetLikes().FirstOrDefault(l => l.ID == id);
+        }
+
+        private LikeModel GetLike(int ownerid, int itemid, string itemname)
+        {
+            if (itemname == "user")
+            {
+                foreach (UserModel user in Users)
+                {
+                    foreach (LikeModel like in user.Likes)
+                    {
+                        if (like.Owner_ID.Equals(ownerid) && like.User_ID.Equals(itemid))
+                            return like;
+                    }
+                }
+            }
+            else if (itemname == "shop")
+            {
+                foreach (ShopModel shop in GetShops())
+                {
+                    foreach (LikeModel like in shop.Likes)
+                    {
+                        if (like.Owner_ID.Equals(ownerid) && like.Shop_ID.Equals(itemid))
+                            return like;
+                    }
+                }
+            }
+            else if (itemname == "vehicle")
+            {
+                foreach (VehicleModel vehicle in GetVehicles(false))
+                {
+                    foreach (LikeModel like in vehicle.Likes)
+                    {
+                        if (like.Owner_ID.Equals(ownerid) && like.Vehicle_ID.Equals(itemid))
+                            return like;
+                    }
+                }
+            }
+            else if (itemname == "comment")
+            {
+                foreach (CommentModel comment in GetComments())
+                {
+                    foreach (LikeModel like in comment.Likes)
+                    {
+                        if (like.Owner_ID.Equals(ownerid) && like.Comment_ID.Equals(itemid))
+                            return like;
+                    }
+                }
+            }
+            throw new ArgumentException("Like not found!");
         }
 
         //-Common FUNCTIONS---------------------------------------------------------------------------------------------------
@@ -667,19 +1037,49 @@ namespace UsedCars
             }
             else if (table == "vehicles")
             {
-                foreach (UserModel user in Users)
+                VehicleModel vehicle = GetVehicleByID(id);
+
+                if (vehicle.User_ID != null)
                 {
-                    if (user.Vehicles.Count >= 1)
-                    {
-                        user.RemoveVehicle(user.Vehicles.FirstOrDefault(v => v.ID == id));
-                    }
-                    foreach (ShopModel shop in user.Shops)
-                    {
-                        if (shop.Vehicles.Count >= 1)
-                        {
-                            shop.RemoveVehicle(shop.Vehicles.FirstOrDefault(v => v.ID == id));
-                        }
-                    }
+                    GetUserByID(int.Parse($"{vehicle.User_ID}")).RemoveVehicle(vehicle);
+                }
+                else if (vehicle.Shop_ID != null)
+                {
+                    GetShopByID(int.Parse($"vehicle.Shop_ID")).RemoveVehicle(vehicle);
+                }
+            }
+            else if (table == "likes")
+            {
+                LikeModel like = GetLikeByID(id);
+
+                if (like.User_ID != null)
+                {
+                    GetUserByID(int.Parse($"{like.User_ID}")).RemoveLike(like);
+                }
+                else if (like.Shop_ID != null)
+                {
+                    GetShopByID(int.Parse($"{like.Shop_ID}")).RemoveLike(like);
+                }
+                else if (like.Vehicle_ID != null)
+                {
+                    GetVehicleByID(int.Parse($"{like.Vehicle_ID}")).RemoveLike(like);
+                }
+            }
+            else if (table == "comments")
+            {
+                CommentModel comment = GetCommentByID(id);
+
+                if (comment.User_ID != null)
+                {
+                    GetUserByID(int.Parse($"{comment.User_ID}")).RemoveComment(comment);
+                }
+                else if (comment.Shop_ID != null)
+                {
+                    GetShopByID(int.Parse($"{comment.Shop_ID}")).RemoveComment(comment);
+                }
+                else if (comment.Vehicle_ID != null)
+                {
+                    GetVehicleByID(int.Parse($"{comment.Vehicle_ID}")).RemoveComment(comment);
                 }
             }
         }
@@ -830,6 +1230,29 @@ namespace UsedCars
                         CheckIntOrNull(reader["shop_id"].ToString())
                         );
                         AddCommentTo(comment, comment.User_ID, comment.Vehicle_ID, comment.Shop_ID);
+                    }
+                }
+            }
+
+            using (var conn = new NpgsqlConnection(Program.ConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand("SELECT * FROM likes", conn))
+                {
+                    var reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        LikeModel like = new LikeModel
+                        (
+                        int.Parse(reader["id"].ToString()),
+                        int.Parse(reader["owner_id"].ToString()),
+                        Convert.ToInt64(reader["submission_time"].ToString()),
+                        CheckIntOrNull(reader["user_id"].ToString()),
+                        CheckIntOrNull(reader["shop_id"].ToString()),
+                        CheckIntOrNull(reader["vehicle_id"].ToString()),
+                        CheckIntOrNull(reader["comment_id"].ToString())
+                        );
+                        AddLikeTo(like);
                     }
                 }
             }

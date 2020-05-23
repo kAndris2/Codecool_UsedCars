@@ -20,6 +20,7 @@ namespace UsedCars.Models
         public List<CommentModel> Comments = new List<CommentModel>();
         public List<PurchaseModel> Purchases = new List<PurchaseModel>();
         public List<VehicleModel> Vehicles = new List<VehicleModel>();
+        public List<LikeModel> Likes = new List<LikeModel>();
 
         public ShopModel(int id, string name, string address, int ownerid, long regist)
         {
@@ -57,10 +58,15 @@ namespace UsedCars.Models
         public String GetFirstPicture() { return Pictures.Count == 0 ? null : Pictures[0].Route; }
 
         public void AddPicture(PictureModel picture) { Pictures.Add(picture); }
-        public void AddComment(CommentModel comment) { Comments.Add(comment); }
         public void AddPurchase(PurchaseModel purchase) { Purchases.Add(purchase); }
-        public void AddVehicle(VehicleModel vehicle) { Vehicles.Add(vehicle); }
 
+        public void AddComment(CommentModel comment) { Comments.Add(comment); }
+        public void RemoveComment(CommentModel comment) { Comments.Remove(comment); }
+
+        public void AddVehicle(VehicleModel vehicle) { Vehicles.Add(vehicle); }
         public void RemoveVehicle(VehicleModel vehicle) { Vehicles.Remove(vehicle); }
+
+        public void AddLike(LikeModel like) { Likes.Add(like); }
+        public void RemoveLike(LikeModel like) { Likes.Remove(like); }
     }
 }

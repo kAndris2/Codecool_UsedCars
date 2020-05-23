@@ -32,10 +32,9 @@
                     @Html.ActionLink(shop.Name, "Shop_Profile", new { id = shop.ID })
                 </td>
                 <td class="text-center">@shop.Address</td>
-                <td class="text-center">@Model.GetUserByID(shop.Owner_ID).Name</td>
+                <td class="text-center">@Html.ActionLink(Model.GetUserByID(shop.Owner_ID).Name, "User_Profile", "User", new { id = shop.Owner_ID })</td>
                 <td class="text-center">@shop.Views</td>
             </tr>
         }
     }
 </table>
-

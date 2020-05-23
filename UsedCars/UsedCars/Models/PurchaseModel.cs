@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace UsedCars.Models
 {
-    public class PurchaseModel
+    public class PurchaseModel : ICloneable
     {
         public int ID { get; }
         public int Shop_ID { get; }
-        public int Amount { get; }
+        public int Amount { get; set; }
         public int Year { get; }
         public String Brand { get; }
 
@@ -21,5 +21,7 @@ namespace UsedCars.Models
             Year = year;
             Brand = brand;
         }
+
+        public object Clone() { return this.MemberwiseClone(); }
     }
 }

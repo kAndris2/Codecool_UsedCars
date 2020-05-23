@@ -76,5 +76,18 @@ namespace UsedCars.Controllers
             IDAO.Delete("vehicles", id);
             return RedirectToAction("Index", "Home");
         }
+
+        public IActionResult Buy_Vehicle([FromForm(Name = "vehicleid")] int vehicleid, [FromForm(Name = "userid")] int userid, [FromForm(Name = "shopid")] int shopid)
+        {
+            IDAO.BuyVehicle(vehicleid, userid, shopid);
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public IActionResult Vehicle_Comment([FromForm(Name = "title")] string title, [FromForm(Name = "message")] string message, [FromForm(Name = "ownerid")] int ownerid, [FromForm(Name = "vehicleid")] int vehicleid)
+        {
+            IDAO.CreateComment("vehicle", vehicleid, title, message, ownerid);
+            return View("Vehicle_Profile", IDAO.GetVehicleByID(vehicleid));
+        }
     }
 }

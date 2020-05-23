@@ -16,6 +16,8 @@ namespace UsedCars.Models
         public int? Vehicle_ID { get; }
         public int? Shop_ID { get; }
 
+        public List<LikeModel> Likes = new List<LikeModel>();
+
         public CommentModel(int id, int owenerid, string title, string message, long submission_time, int? userid, int? vehicleid, int? shopid)
         {
             ID = id;
@@ -29,5 +31,8 @@ namespace UsedCars.Models
         }
 
         public DateTime GetDate() { return new DateTime(1970, 1, 1).AddMilliseconds(double.Parse(Submission_Time.ToString())); }
+
+        public void AddLike(LikeModel like) { Likes.Add(like); }
+        public void RemoveLike(LikeModel like) { Likes.Remove(like); }
     }
 }

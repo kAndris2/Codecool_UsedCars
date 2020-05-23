@@ -1,0 +1,55 @@
+﻿@model UserModel
+@{
+    ViewData["Title"] = Model.Name + "'s garage";
+    IDAO Singleton = IDAO.Singleton;
+}
+
+<h1 class="card-text">
+    @Html.ActionLink(Model.Name, "User_Profile", "User", new { id = Model.ID })
+    's garage:
+</h1>
+
+@foreach (VehicleModel vehicle in Model.Vehicles)
+{
+    if (vehicle.User_ID != null)
+    {
+        <div class="media" style="background-color:white;">
+
+            <a href="@Url.Action("Vehicle_Profile", "Vehicle", new { id = vehicle.ID})">
+                @if (vehicle.Pictures.Count >= 1)
+                {
+                    <img class="mr-3" src="@vehicle.GetFirstPicture()" width="200" height="140" />
+                }
+                else
+                {
+                    <img class="mr-3" src="~/pics/no_img.png" width="200" height="140" />
+                }
+            </a>
+
+            <div class="media-body">
+                <h5 class="mt-0">
+                    @Html.ActionLink($"{vehicle.Brand} {vehicle.Model} {Singleton.GetCapacity($"{vehicle.Cylinder_Capacity}")} {string.Join(' ', vehicle.Type_Designation)}", "Vehicle_Profile", "Vehicle", new { id = vehicle.ID })
+                </h5>
+
+                <p>
+                    @vehicle.Fuel,
+                    @vehicle.Vintage,
+                    @vehicle.Cylinder_Capacity cm<sup>3</sup>,
+                    @vehicle.Performance kW,
+                    @vehicle.Odometer km
+                </p>
+
+                <span style="display:block;width:650px;overflow:hidden; white-space:nowrap;text-overflow:ellipsis;">
+                    @vehicle.Description
+                </span>
+
+                <p>(ID: @vehicle.ID)</p>
+            </div>
+
+            <h6 class="card-text">@string.Format("{0:C}", vehicle.Price)</h6>
+
+        </div>
+        <br>
+    }
+}
+

@@ -21,13 +21,14 @@ namespace UsedCars.Models
         public int Views { get; private set; }
         public int Votes { get; private set; }
         public bool Validity { get; private set; }
-        public int? Shop_ID { get; }
-        public int? User_ID { get; }
+        public int? Shop_ID { get; private set; }
+        public int? User_ID { get; private set; }
         public long Registration_Date { get; }
 
         public List<PictureModel> Pictures = new List<PictureModel>();
         public List<CommentModel> Comments = new List<CommentModel>();
         public List<String> Type_Designation = new List<string>();
+        public List<LikeModel> Likes = new List<LikeModel>();
 
         public VehicleModel(int id, string brand, string model, int vintage, string type, int price, string fuel, string type_des, int cylinder, int performance, int odometer, string description, bool validity, int? shopid, int? userid, long register)
         {
@@ -96,6 +97,17 @@ namespace UsedCars.Models
         }
 
         public void AddPicture(PictureModel picture) { Pictures.Add(picture); }
+
         public void AddComment(CommentModel comment) { Comments.Add(comment); }
+        public void RemoveComment(CommentModel comment) { Comments.Remove(comment); }
+
+        public void AddLike(LikeModel like) { Likes.Add(like); }
+        public void RemoveLike(LikeModel like) { Likes.Remove(like); }
+
+        public void Buyed(int userid)
+        {
+            Shop_ID = null;
+            User_ID = userid;
+        }
     }
 }
