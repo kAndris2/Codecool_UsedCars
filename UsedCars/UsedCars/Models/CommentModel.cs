@@ -9,8 +9,8 @@ namespace UsedCars.Models
     {
         public int ID { get; }
         public int Owner_ID { get; }
-        public String Title { get; }
-        public String Message { get; }
+        public String Title { get; private set; }
+        public String Message { get; private set; }
         public long Submission_Time { get; }
         public int? User_ID { get; }
         public int? Vehicle_ID { get; }
@@ -34,5 +34,11 @@ namespace UsedCars.Models
 
         public void AddLike(LikeModel like) { Likes.Add(like); }
         public void RemoveLike(LikeModel like) { Likes.Remove(like); }
+
+        public void Update(string title, string message)
+        {
+            Title = title;
+            Message = message;
+        }
     }
 }

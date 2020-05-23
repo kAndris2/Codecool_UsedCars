@@ -3,6 +3,11 @@
     ViewData["Title"] = Model.Title;
 }
 
+<br>
+<div class="float-right">
+    @Html.ActionLink("Delete comment", "Delete_Comment", "Comment", new { commentid = Model.ID }, new { @class = "btn btn-danger" })
+</div>
+
 <h1>Comment - Editor</h1>
 
 @using (Html.BeginForm("Editor", "Comment", FormMethod.Post))
@@ -23,4 +28,21 @@
 
     <input type="hidden" name="id" value="@Model.ID" />
     <button type="submit" class="btn btn-success">Done</button>
+
+    <div class="float-right">
+        <span>
+            @if (Model.User_ID != null)
+            {
+                @Html.ActionLink("Back", "User_Profile", "User", new { id = Model.User_ID }, new { @class = "btn btn-danger ml-auto mr-1" })
+            }
+            else if (Model.Shop_ID != null)
+            {
+                @Html.ActionLink("Back", "Shop_Profile", "Shop", new { id = Model.Shop_ID }, new { @class = "btn btn-danger ml-auto mr-1" })
+            }
+            else
+            {
+                @Html.ActionLink("Back", "Vehicle_Profile", "Vehicle", new { id = Model.Vehicle_ID }, new { @class = "btn btn-danger ml-auto mr-1" })
+            }
+        </span>
+    </div>
 }

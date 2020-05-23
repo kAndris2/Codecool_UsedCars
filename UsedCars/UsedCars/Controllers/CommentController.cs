@@ -17,18 +17,29 @@ namespace UsedCars.Controllers
             return View(IDAO.GetCommentByID(id));
         }
 
-        [HttpPost]
-        public IActionResult Delete_Comment([FromForm(Name = "commentid")] int commentid)
+        public IActionResult Delete_Comment([FromRoute(Name = "commentid")] int commentid)
         {
-            CommentModel comment = IDAO.GetCommentByID(commentid);
             IDAO.Delete("comments", commentid);
-
-            if (comment.User_ID != null)
-                return RedirectToAction("Index", "User", new { id = comment.User_ID });
-            else if (comment.Shop_ID != null)
-                return RedirectToAction("Index", "Shop", comment.Shop_ID);
-            else
-                return RedirectToAction("Index", "Vehicle", comment.Vehicle_ID);
+            return CheckReturn(IDAO.GetCommentByID(commentid));
         }
+
+        [HttpPost]
+        public IActionResult Editor([FromForm(Name = "title")] string title, [FromForm(Name = "message")] string message, [FromForm(Name = "id")] int commentid)
+        {
+            IDAO.EditComment(commentid, title, message);
+            return CheckReturn(IDAO.GetCommentByID(commentid));
+        }
+
+        private IActionResult CheckReturn(CommentModel comment)
+        {
+            if (comment.User_ID != null)
+                return RedirectToAction("User_Profile", "User", new { id = comment.User_ID });
+            else if (comment.Shop_ID != null)
+                return RedirectToAction("Shop_Profile", "Shop", new { id = comment.Shop_ID });
+            else
+                return RedirectToAction("Vehicle_Profile", "Vehicle", new { id = comment.Vehicle_ID });
+        }
+
+
     }
 }

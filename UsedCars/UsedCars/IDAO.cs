@@ -542,6 +542,25 @@ namespace UsedCars
         }
 
         //-Comment FUNCTIONS------------------------------------------------------------------------------------------------
+        public void EditComment(int id, string title, string message)
+        {
+            string sqlstr = "UPDATE comments " +
+                                "SET title = @title, message = @message " +
+                            "WHERE id = @id";
+            using (var conn = new NpgsqlConnection(Program.ConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sqlstr, conn))
+                {
+                    cmd.Parameters.AddWithValue("id", id);
+                    cmd.Parameters.AddWithValue("title", title);
+                    cmd.Parameters.AddWithValue("message", message);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            GetCommentByID(id).Update(title, message);
+        }
+
         public void CreateComment(string table_name, int? recordid, string title, string message, int? ownerid)
         {
             int id = 0;
