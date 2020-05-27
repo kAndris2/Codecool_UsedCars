@@ -1,7 +1,7 @@
 ﻿@model VehicleModel
 @{
     ViewData["Title"] = "Create";
-    UserModel user = IDAO.Singleton.GetUserByEmail(User.Claims.First().Value);
+    UserModel user = IDAO.Singleton.GetUserByID(int.Parse(User.FindFirst("Id").Value));
 }
 
 <h1>Vehicle Creator</h1>

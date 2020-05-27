@@ -3,11 +3,6 @@
     ViewData["Title"] = Model.Name + "'s profile";
     IDAO Singleton = IDAO.Singleton;
     Singleton.UpdateViews("users", Model.ID);
-    string currentTable = "user";
-    UserModel user = null;
-
-    if (User.Identity.IsAuthenticated)
-        user = Singleton.GetUserByEmail(User.Claims.First().Value);
 }
 
 <link rel="stylesheet" href="~/css/slideshow.css" />
@@ -50,7 +45,7 @@
 
         @if (User.Identity.IsAuthenticated)
         {
-            @if (Model.ID == user.ID)
+            @if (Model.ID == int.Parse(User.FindFirst("Id").Value))
             {
                 <div class="float-right">
                     <a href="@Url.Action("User_Edit", "User", new { id = Model.ID })">
@@ -102,7 +97,7 @@
         <p class="card-text"><small class="text-muted">Registered at: @Model.GetDate(Model.Registration_Date)</small></p>
         <p>
             <small>
-                <b id="siteLikeCount">@Model.Likes.Count</b>
+                <b id="siteLikeCount" data-value="@Model.Likes.Count">@Model.Likes.Count</b>
                 <b>likes</b>
             </small>
         </p>
@@ -110,7 +105,7 @@
         @if (User.Identity.IsAuthenticated)
         {
             <div class="container row">
-                <div class="col-auto">
+                <div id="siteLikeBar" class="col-auto" data-ownerid="@User.FindFirst("Id").Value" data-modelid="@Model.ID" data-table="user">
                     <a href="#">
                         <img style="display:block" id="dislike" onclick="dislikeSite()" src="~/pics/liked.jpg" width="30" height="30" />
                     </a>
@@ -139,60 +134,62 @@
 
 @foreach (CommentModel comment in Model.Comments)
 {
-    <div class="media" style="background-color:white;">
+    <div class="container">
+        <div class="media" style="background-color:white;">
 
-        <a href="@Url.Action("User_Profile", "User", new { id = comment.Owner_ID})">
-            @if (Singleton.GetUserByID(comment.Owner_ID).Pictures.Count >= 1)
-            {
-                <img class="mr-3" src="@Singleton.GetUserByID(comment.Owner_ID).Pictures[0].Route" width="70" height="64" />
-            }
-            else
-            {
-                <img class="mr-3" src="~/pics/no_img.png" width="70" height="64" />
-            }
-        </a>
+            <a href="@Url.Action("User_Profile", "User", new { id = comment.Owner_ID})">
+                @if (Singleton.GetUserByID(comment.Owner_ID).Pictures.Count >= 1)
+                {
+                    <img class="mr-3" src="@Singleton.GetUserByID(comment.Owner_ID).Pictures[0].Route" width="70" height="64" />
+                }
+                else
+                {
+                    <img class="mr-3" src="~/pics/no_img.png" width="70" height="64" />
+                }
+            </a>
 
-        <div class="media-body">
-            <h5 class="mt-0">#@comment.ID - @comment.Title</h5>
-            @Singleton.LineBreak(comment.Message)
+            <div class="media-body">
+                <h5 class="mt-0">#@comment.ID - @comment.Title</h5>
+                @Singleton.LineBreak(comment.Message)
 
-            <p>
-                <small>
-                    <b id="likecount_@comment.ID">@comment.Likes.Count</b>
-                    <b>likes</b>
-                </small>
-            </p>
-        </div>
-
-        <p class="card-text"><small class="text-muted">@comment.GetDate()</small></p>
-
-    </div>
-
-    @if (User.Identity.IsAuthenticated)
-    {
-        <div class="container row">
-            @if (user.ID == comment.Owner_ID)
-            {
-                <div class="col-auto">
-                    <a href="@Url.Action("Edit_Comment", "Comment", new { id = comment.ID})">
-                        <img src="~/pics/settings.jpg" width="30" height="30" />
-                    </a>
-                </div>
-            }
-
-            <div class="col-auto">
-                <a href="#">
-                    <img style="display:block" id="dislike_@comment.ID" onclick="dislikeComment(@comment.ID)" src="~/pics/liked.jpg" width="30" height="30" />
-                </a>
-                <a href="#">
-                    <img style="display:block" id="like_@comment.ID" onclick="likeComment(@comment.ID)" src="~/pics/like.jpg" width="30" height="30" />
-                </a>
+                <p>
+                    <small>
+                        <b id="likecount_@comment.ID">@comment.Likes.Count</b>
+                        <b>likes</b>
+                    </small>
+                </p>
             </div>
 
-        </div>
-    }
+            <p class="card-text"><small class="text-muted">@comment.GetDate()</small></p>
 
-    <br>
+        </div>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="container row">
+                @if (int.Parse(User.FindFirst("Id").Value) == comment.Owner_ID)
+                {
+                    <div class="col-auto">
+                        <a href="@Url.Action("Edit_Comment", "Comment", new { id = comment.ID})">
+                            <img src="~/pics/settings.jpg" width="30" height="30" />
+                        </a>
+                    </div>
+                }
+
+                <div id="commentLikeBar" class="col-auto" data-ownerid="@User.FindFirst("Id").Value">
+                    <a href="#">
+                        <img style="display:block" id="dislike_@comment.ID" onclick="dislikeComment(@comment.ID)" src="~/pics/liked.jpg" width="30" height="30" />
+                    </a>
+                    <a href="#">
+                        <img style="display:block" id="like_@comment.ID" onclick="likeComment(@comment.ID)" src="~/pics/like.jpg" width="30" height="30" />
+                    </a>
+                </div>
+
+            </div>
+        }
+
+        <br>
+    </div>
 }
 
 @if (User.Identity.IsAuthenticated)
@@ -216,7 +213,7 @@
                             <label for="message-text" class="col-form-label">Message:</label>
                             <textarea class="form-control" name="message"></textarea>
                         </div>
-                        <input type="hidden" name="ownerid" value="@user.ID" />
+                        <input type="hidden" name="ownerid" value="@User.FindFirst("Id").Value" />
                         <input type="hidden" name="userid" value="@Model.ID" />
 
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -227,107 +224,9 @@
             </div>
         </div>
     </div>
-
-    <script>
-
-        function dislikeSite() {
-            document.getElementById("dislike").style.display = "none";
-            document.getElementById("like").style.display = "block";
-            $.post("/Like/Delete", { 'likedata': [@user.ID.ToString(), @Model.ID.ToString(), '@(currentTable)'] });
-            document.getElementById("siteLikeCount").innerHTML = @Model.Likes.Count;
-            console.log(@Model.Likes.Count);
-        }
-
-        function likeSite() {
-            document.getElementById("like").style.display = "none";
-            document.getElementById("dislike").style.display = "block";
-            $.post("/Like/Create", { 'likedata': [@user.ID.ToString(), @Model.ID.ToString(), '@(currentTable)'] });
-            document.getElementById("siteLikeCount").innerHTML = @Model.Likes.Count;
-            console.log(@Model.Likes.Count);
-        }
-
-        function dislikeComment(id) {
-            document.getElementById("dislike_" + id).style.display = "none";
-            document.getElementById("like_" + id).style.display = "block";
-            $.post("/Like/Delete", { 'likedata': [@user.ID.ToString(), id, 'comment'] });
-            document.getElementById("likecount_" + id).innerHTML = CountCommentLikes(id);
-        }
-
-        function likeComment(id) {
-            document.getElementById("dislike_" + id).style.display = "block";
-            document.getElementById("like_" + id).style.display = "none";
-            $.post("/Like/Create", { 'likedata': [@user.ID.ToString(), id, 'comment'] });
-            document.getElementById("likecount_" + id).innerHTML = CountCommentLikes(id) + 1;
-        }
-
-        function CountCommentLikes(id) {
-            let count = 0;
-            likeList.forEach((like) => {
-                if (like.comment_ID == id) {
-                    count++;
-                }
-            });
-            return count;
-        }
-
-        function getComments() {
-            commentList = JSON.parse(this.responseText);
-
-            const xhr = new XMLHttpRequest();
-            xhr.addEventListener('load', getLikes);
-            xhr.open('POST', '/Like/GetLikes');
-            xhr.send();
-        }
-
-        function getLikes() {
-            likeList = JSON.parse(this.responseText);
-            commentList.forEach((comment) => {
-                if (likeList.length >= 1) {
-                    likeList.forEach((like) => {
-                        if (like.comment_ID == comment.id && like.owner_ID == @user.ID) {
-                            document.getElementById("dislike_" + comment.id).style.display = "block";
-                            document.getElementById("like_"  + comment.id).style.display = "none";
-                        }
-                        else {
-                            document.getElementById("dislike_" + comment.id).style.display = "none";
-                            document.getElementById("like_"  + comment.id).style.display = "block";
-                        }
-                    });
-                }
-                else {
-                    document.getElementById("dislike_" + comment.id).style.display = "none";
-                    document.getElementById("like_"  + comment.id).style.display = "block";
-                }
-            });
-        }
-
-        let check = '@(Singleton.UserIsLikedThis(user.ID, Model.ID, currentTable))'
-
-        if (check === 'False') {
-            document.getElementById("dislike").style.display = "none";
-            document.getElementById("like").style.display = "block";
-        }
-        else {
-            document.getElementById("dislike").style.display = "block";
-            document.getElementById("like").style.display = "none";
-        }
-
-        var commentList;
-        var likeList;
-        const xhr = new XMLHttpRequest();
-        xhr.addEventListener('load', getComments);
-        xhr.open('POST', '/Like/GetComments');
-        xhr.send();
-
-    </script>
 }
 
-<script>
-    function fakeButton() {
-        document.getElementById("fake").style.display = "inherit";
-    }
-</script>
-
+<script src="~/js/like.js"></script>
 <script src="~/js/slideshow.js"></script>
 <script src="~/js/modals.js"></script>
 

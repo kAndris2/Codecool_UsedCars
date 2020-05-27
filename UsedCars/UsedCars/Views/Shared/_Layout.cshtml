@@ -36,7 +36,7 @@
                     {
 
                         <div class="mr-5">
-                            <a style="color:white">Logged in as @IDAO.Singleton.GetUserByEmail(User.Claims.First().Value).Name!</a>
+                            <a style="color:white">Logged in as @User.FindFirst("Username").Value!</a>
                         </div>
 
                         <div class="float-right">

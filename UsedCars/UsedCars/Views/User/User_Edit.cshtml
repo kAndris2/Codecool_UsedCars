@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = Model.Name;
     IDAO Singleton = IDAO.Singleton;
-    UserModel user = Singleton.GetUserByEmail(User.Claims.First().Value);
 }
 
 <br>

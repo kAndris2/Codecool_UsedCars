@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace UsedCars.Controllers
 {
+    [Authorize]
     public class ShopController : Controller
     {
         private IDAO IDAO = IDAO.Singleton;
@@ -40,7 +43,8 @@ namespace UsedCars.Controllers
 
         public IActionResult Editor([FromForm(Name = "name")] string name, [FromForm(Name = "address")] string address, [FromForm(Name = "description")] string description, [FromForm(Name = "id")] int id, [FromForm(Name = "webpage")] string webpage)
         {
-            IDAO.EditShop(id, name, address, description, webpage);
+            //IDAO.EditShop(id, name, address, description, webpage);
+            int userid = int.Parse(HttpContext.User.FindFirstValue("Id"));
             return View("Shop_Profile", IDAO.GetShopByID(id));
         }
 

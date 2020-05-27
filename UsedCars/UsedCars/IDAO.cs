@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using Microsoft.AspNetCore.Http;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -98,9 +99,10 @@ namespace UsedCars
             int id = 0;
             long milisec = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             string sqlstr = "INSERT INTO users " +
-                                "(name, registration_date, email, password, rank) " +
+                                "(name, registration_date, email, password, rank, wallet) " +
                                 "VALUES " +
-                                    "(@name, @date, @email, @password, @rank)";
+                                    "(@name, @date, @email, @password, @rank, @wallet) " +
+                                "RETURNING id";
             using (var conn = new NpgsqlConnection(Program.ConnectionString))
             {
                 conn.Open();
@@ -111,14 +113,17 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("email", email);
                     cmd.Parameters.AddWithValue("password", password);
                     cmd.Parameters.AddWithValue("rank", "Member");
-                    cmd.ExecuteNonQuery();
+                    cmd.Parameters.AddWithValue("wallet", 1000000);
+                    //
+                    var reader = cmd.ExecuteReader();
+                    reader.Read();
+                    id = (int)reader["id"];
                 }
-                id = int.Parse(GetLastIDFromTable(conn, "users"));
             }
             Users.Add(new UserModel(id, name, milisec, email, password));
         }
 
-        public void UpdateWallet(int id, int price)
+        private void UpdateWallet(int id, int price)
         {
             UserModel user = GetUserByID(id);
             user.DecreaseWalletAmount(price);
@@ -173,7 +178,8 @@ namespace UsedCars
             string sqlstr = "INSERT INTO vehicles " +
                                 "(brand, model, type, fuel, type_designation, odometer, vintage, validity, price, cylinder_capacity, performance, shop_id, description, registration_date) " +
                                 "VALUES " +
-                                "(@brand, @model, @type, @fuel, @type_designation, @odometer, @vintage, @validity, @price, @cylinder, @performance, @shopid, @description, @register)";
+                                "(@brand, @model, @type, @fuel, @type_designation, @odometer, @vintage, @validity, @price, @cylinder, @performance, @shopid, @description, @register) " +
+                                "RETURNING id";
             using (var conn = new NpgsqlConnection(Program.ConnectionString))
             {
                 conn.Open();
@@ -193,9 +199,11 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("shopid", shopid);
                     cmd.Parameters.AddWithValue("description", description);
                     cmd.Parameters.AddWithValue("register", milisec);
-                    cmd.ExecuteNonQuery();
+                    //
+                    var reader = cmd.ExecuteReader();
+                    reader.Read();
+                    id = (int)reader["id"];
                 }
-                id = int.Parse(GetLastIDFromTable(conn, "vehicles"));
             }
 
             VehicleModel vehicle = new VehicleModel
@@ -465,7 +473,8 @@ namespace UsedCars
             string sqlstr = "INSERT INTO purchases " +
                                 "(shop_id, amount, year, brand) " +
                                 "VALUES " +
-                                    "(@shopid, @amount, @year, @brand)";
+                                    "(@shopid, @amount, @year, @brand) " +
+                                "RETURNING id";
             using (var conn = new NpgsqlConnection(Program.ConnectionString))
             {
                 conn.Open();
@@ -475,9 +484,11 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("amount", amount);
                     cmd.Parameters.AddWithValue("year", year);
                     cmd.Parameters.AddWithValue("brand", brand);
-                    cmd.ExecuteNonQuery();
+                    //
+                    var reader = cmd.ExecuteReader();
+                    reader.Read();
+                    id = (int)reader["id"];
                 }
-                id = int.Parse(GetLastIDFromTable(conn, "purchases"));
             }
             GetShopByID(shopid).AddPurchase(new PurchaseModel(id, shopid, amount, year, brand));
         }
@@ -568,7 +579,8 @@ namespace UsedCars
             string sqlstr = "INSERT INTO comments " +
                                 "(title, message, submission_time, owner_id, user_id, vehicle_id, shop_id) " +
                                 "VALUES " +
-                                    "(@title, @message, @date, @ownerid, @userid, @vehicleid, @shopid)";
+                                    "(@title, @message, @date, @ownerid, @userid, @vehicleid, @shopid) " +
+                                "RETURNING id";
             using (var conn = new NpgsqlConnection(Program.ConnectionString))
             {
                 conn.Open();
@@ -581,9 +593,11 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("userid", table_name == "user" ? ownerid : GiveDBNull());
                     cmd.Parameters.AddWithValue("vehicleid", table_name == "vehicle" ? ownerid : GiveDBNull());
                     cmd.Parameters.AddWithValue("shopid", table_name == "shop" ? ownerid : GiveDBNull());
-                    cmd.ExecuteNonQuery();
+                    //
+                    var reader = cmd.ExecuteReader();
+                    reader.Read();
+                    id = (int)reader["id"];
                 }
-                id = int.Parse(GetLastIDFromTable(conn, "comments"));
             }
 
             CommentModel comment = new CommentModel
@@ -682,7 +696,8 @@ namespace UsedCars
             string sqlstr = "INSERT INTO pictures " +
                                 "(route, user_id, vehicle_id, shop_id) " +
                                 "VALUES " +
-                                    "(@route, @userid, @vehicleid, @shopid)";
+                                    "(@route, @userid, @vehicleid, @shopid) " +
+                                "RETURNING id";
             using (var conn = new NpgsqlConnection(Program.ConnectionString))
             {
                 conn.Open();
@@ -692,9 +707,11 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("userid", table_name == "user" ? ownerid : GiveDBNull());
                     cmd.Parameters.AddWithValue("vehicleid", table_name == "vehicle" ? ownerid : GiveDBNull());
                     cmd.Parameters.AddWithValue("shopid", table_name == "shop" ? ownerid : GiveDBNull());
-                    cmd.ExecuteNonQuery();
+                    //
+                    var reader = cmd.ExecuteReader();
+                    reader.Read();
+                    id = (int)reader["id"];
                 }
-                id = int.Parse(GetLastIDFromTable(conn, "pictures"));
             }
 
             PictureModel picture = new PictureModel
@@ -785,7 +802,8 @@ namespace UsedCars
             string sqlstr = "INSERT INTO shops " +
                                 "(name, address, owner_id, registration_date) " +
                                 "VALUES " +
-                                    "(@name, @address, @ownerid, @date)";
+                                    "(@name, @address, @ownerid, @date) " +
+                                "RETURNING id";
             using (var conn = new NpgsqlConnection(Program.ConnectionString))
             {
                 conn.Open();
@@ -795,9 +813,11 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("address", address);
                     cmd.Parameters.AddWithValue("ownerid", owner.ID);
                     cmd.Parameters.AddWithValue("date", milisec);
-                    cmd.ExecuteNonQuery();
+                    //
+                    var reader = cmd.ExecuteReader();
+                    reader.Read();
+                    id = (int)reader["id"];
                 }
-                id = int.Parse(GetLastIDFromTable(conn, "shops"));
             }
             owner.AddShop(new ShopModel(id, name, address, owner.ID, milisec));
         }
@@ -885,7 +905,8 @@ namespace UsedCars
             string sqlstr = "INSERT INTO likes " +
                                 "(owner_id, submission_time, user_id, shop_id, vehicle_id, comment_id) " +
                                 "VALUES " +
-                                    "(@ownerid, @date, @userid, @shopid, @vehicleid, @commentid)";
+                                    "(@ownerid, @date, @userid, @shopid, @vehicleid, @commentid) " +
+                                "RETURNING id";
             using (var conn = new NpgsqlConnection(Program.ConnectionString))
             {
                 conn.Open();
@@ -897,9 +918,11 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("shopid", itemname == "shop" ? itemid : GiveDBNull());
                     cmd.Parameters.AddWithValue("vehicleid", itemname == "vehicle" ? itemid : GiveDBNull());
                     cmd.Parameters.AddWithValue("commentid", itemname == "comment" ? itemid : GiveDBNull());
-                    cmd.ExecuteNonQuery();
+                    //
+                    var reader = cmd.ExecuteReader();
+                    reader.Read();
+                    id = (int)reader["id"];
                 }
-                id = int.Parse(GetLastIDFromTable(conn, "likes"));
             }
             AddLikeTo
             (
@@ -1018,20 +1041,6 @@ namespace UsedCars
             return data;
         }
 
-        public String GetLastIDFromTable(NpgsqlConnection connection, string table)
-        {
-            string value = "";
-            using (var cmd = new NpgsqlCommand($"SELECT * FROM {table}", connection))
-            {
-                var reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    value = reader["id"].ToString();
-                }
-            }
-            return value;
-        }
-
         public Object GiveDBNull() { return DBNull.Value; }
 
         public void Delete(string table, int id)
@@ -1147,152 +1156,143 @@ namespace UsedCars
                 conn.Open();
                 using (var cmd = new NpgsqlCommand("SELECT * FROM users", conn))
                 {
-                    var reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        Users.Add
-                        (
-                            new UserModel
+                        while (reader.Read())
+                        {
+                            Users.Add
+                            (
+                                new UserModel
+                                (
+                                int.Parse(reader["id"].ToString()),
+                                reader["name"].ToString(),
+                                Convert.ToInt64(reader["registration_date"].ToString()),
+                                CheckBoolOrNull(reader["gender"].ToString()),
+                                reader["email"].ToString(),
+                                reader["password"].ToString(),
+                                int.Parse(reader["wallet"].ToString()),
+                                reader["rank"].ToString(),
+                                int.Parse(reader["views"].ToString()),
+                                reader["introduction"].ToString()
+                                )
+                            );
+                        }
+                    }
+                }
+
+                using (var cmd = new NpgsqlCommand("SELECT * FROM shops", conn))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ShopModel shop = new ShopModel
                             (
                             int.Parse(reader["id"].ToString()),
                             reader["name"].ToString(),
-                            Convert.ToInt64(reader["registration_date"].ToString()),
-                            CheckBoolOrNull(reader["gender"].ToString()),
-                            reader["email"].ToString(),
-                            reader["password"].ToString(),
-                            int.Parse(reader["wallet"].ToString()),
-                            reader["rank"].ToString(),
+                            reader["description"].ToString(),
+                            int.Parse(reader["owner_id"].ToString()),
+                            reader["address"].ToString(),
                             int.Parse(reader["views"].ToString()),
-                            reader["introduction"].ToString()
-                            )
-                        );
+                            Convert.ToInt64(reader["registration_date"].ToString()),
+                            reader["webpage"].ToString()
+                            );
+                            GetUserByID(shop.Owner_ID).AddShop(shop);
+                        }
                     }
                 }
 
-            }
-
-            using (var conn = new NpgsqlConnection(Program.ConnectionString))
-            {
-                conn.Open();
-                using (var cmd = new NpgsqlCommand("SELECT * FROM shops", conn))
-                {
-                    var reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        ShopModel shop = new ShopModel
-                        (
-                        int.Parse(reader["id"].ToString()),
-                        reader["name"].ToString(),
-                        reader["description"].ToString(),
-                        int.Parse(reader["owner_id"].ToString()),
-                        reader["address"].ToString(),
-                        int.Parse(reader["views"].ToString()),
-                        Convert.ToInt64(reader["registration_date"].ToString()),
-                        reader["webpage"].ToString()
-                        );
-                        GetUserByID(shop.Owner_ID).AddShop(shop);
-                    }
-                }
-            }
-
-            using (var conn = new NpgsqlConnection(Program.ConnectionString))
-            {
-                conn.Open();
                 using (var cmd = new NpgsqlCommand("SELECT * FROM vehicles", conn))
                 {
-                    var reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        VehicleModel vehicle = new VehicleModel
-                        (
-                        int.Parse(reader["id"].ToString()),
-                        reader["brand"].ToString(),
-                        reader["model"].ToString(),
-                        int.Parse(reader["vintage"].ToString()),
-                        reader["type"].ToString(),
-                        int.Parse(reader["price"].ToString()),
-                        reader["fuel"].ToString(),
-                        reader["type_designation"].ToString(),
-                        int.Parse(reader["cylinder_capacity"].ToString()),
-                        int.Parse(reader["performance"].ToString()),
-                        int.Parse(reader["odometer"].ToString()),
-                        reader["description"].ToString(),
-                        CheckIntOrNull(reader["shop_id"].ToString()),
-                        CheckIntOrNull(reader["user_id"].ToString()),
-                        int.Parse(reader["views"].ToString()),
-                        int.Parse(reader["votes"].ToString()),
-                        reader["validity"].ToString() == "True",
-                        Convert.ToInt64(reader["registration_date"].ToString())
-                        );
-                        AddVehicleTo(vehicle, vehicle.Shop_ID, vehicle.User_ID);
+                        while (reader.Read())
+                        {
+                            VehicleModel vehicle = new VehicleModel
+                            (
+                            int.Parse(reader["id"].ToString()),
+                            reader["brand"].ToString(),
+                            reader["model"].ToString(),
+                            int.Parse(reader["vintage"].ToString()),
+                            reader["type"].ToString(),
+                            int.Parse(reader["price"].ToString()),
+                            reader["fuel"].ToString(),
+                            reader["type_designation"].ToString(),
+                            int.Parse(reader["cylinder_capacity"].ToString()),
+                            int.Parse(reader["performance"].ToString()),
+                            int.Parse(reader["odometer"].ToString()),
+                            reader["description"].ToString(),
+                            CheckIntOrNull(reader["shop_id"].ToString()),
+                            CheckIntOrNull(reader["user_id"].ToString()),
+                            int.Parse(reader["views"].ToString()),
+                            int.Parse(reader["votes"].ToString()),
+                            reader["validity"].ToString() == "True",
+                            Convert.ToInt64(reader["registration_date"].ToString())
+                            );
+                            AddVehicleTo(vehicle, vehicle.Shop_ID, vehicle.User_ID);
+                        }
                     }
                 }
-            }
-
-            using (var conn = new NpgsqlConnection(Program.ConnectionString))
-            {
-                conn.Open();
+            
                 using (var cmd = new NpgsqlCommand("SELECT * FROM comments", conn))
                 {
-                    var reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        CommentModel comment = new CommentModel
-                        (
-                        int.Parse(reader["id"].ToString()),
-                        int.Parse(reader["owner_id"].ToString()),
-                        reader["title"].ToString(),
-                        reader["message"].ToString(),
-                        Convert.ToInt64(reader["submission_time"].ToString()),
-                        CheckIntOrNull(reader["user_id"].ToString()),
-                        CheckIntOrNull(reader["vehicle_id"].ToString()),
-                        CheckIntOrNull(reader["shop_id"].ToString())
-                        );
-                        AddCommentTo(comment, comment.User_ID, comment.Vehicle_ID, comment.Shop_ID);
+                        while (reader.Read())
+                        {
+                            CommentModel comment = new CommentModel
+                            (
+                            int.Parse(reader["id"].ToString()),
+                            int.Parse(reader["owner_id"].ToString()),
+                            reader["title"].ToString(),
+                            reader["message"].ToString(),
+                            Convert.ToInt64(reader["submission_time"].ToString()),
+                            CheckIntOrNull(reader["user_id"].ToString()),
+                            CheckIntOrNull(reader["vehicle_id"].ToString()),
+                            CheckIntOrNull(reader["shop_id"].ToString())
+                            );
+                            AddCommentTo(comment, comment.User_ID, comment.Vehicle_ID, comment.Shop_ID);
+                        }
                     }
                 }
-            }
-
-            using (var conn = new NpgsqlConnection(Program.ConnectionString))
-            {
-                conn.Open();
+            
                 using (var cmd = new NpgsqlCommand("SELECT * FROM likes", conn))
                 {
-                    var reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        LikeModel like = new LikeModel
-                        (
-                        int.Parse(reader["id"].ToString()),
-                        int.Parse(reader["owner_id"].ToString()),
-                        Convert.ToInt64(reader["submission_time"].ToString()),
-                        CheckIntOrNull(reader["user_id"].ToString()),
-                        CheckIntOrNull(reader["shop_id"].ToString()),
-                        CheckIntOrNull(reader["vehicle_id"].ToString()),
-                        CheckIntOrNull(reader["comment_id"].ToString())
-                        );
-                        AddLikeTo(like);
+                        while (reader.Read())
+                        {
+                            LikeModel like = new LikeModel
+                            (
+                            int.Parse(reader["id"].ToString()),
+                            int.Parse(reader["owner_id"].ToString()),
+                            Convert.ToInt64(reader["submission_time"].ToString()),
+                            CheckIntOrNull(reader["user_id"].ToString()),
+                            CheckIntOrNull(reader["shop_id"].ToString()),
+                            CheckIntOrNull(reader["vehicle_id"].ToString()),
+                            CheckIntOrNull(reader["comment_id"].ToString())
+                            );
+                            AddLikeTo(like);
+                        }
                     }
                 }
-            }
-
-            using (var conn = new NpgsqlConnection(Program.ConnectionString))
-            {
-                conn.Open();
+            
                 using (var cmd = new NpgsqlCommand("SELECT * FROM pictures", conn))
                 {
-                    var reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        PictureModel picture = new PictureModel
-                        (
-                        int.Parse(reader["id"].ToString()),
-                        reader["route"].ToString(),
-                        CheckIntOrNull(reader["user_id"].ToString()),
-                        CheckIntOrNull(reader["vehicle_id"].ToString()),
-                        CheckIntOrNull(reader["shop_id"].ToString())
-                        );
-                        AddPictureTo(picture, picture.User_ID, picture.Vehicle_ID, picture.Shop_ID);
+                        while (reader.Read())
+                        {
+                            PictureModel picture = new PictureModel
+                            (
+                            int.Parse(reader["id"].ToString()),
+                            reader["route"].ToString(),
+                            CheckIntOrNull(reader["user_id"].ToString()),
+                            CheckIntOrNull(reader["vehicle_id"].ToString()),
+                            CheckIntOrNull(reader["shop_id"].ToString())
+                            );
+                            AddPictureTo(picture, picture.User_ID, picture.Vehicle_ID, picture.Shop_ID);
+                        }
                     }
                 }
             }

@@ -108,7 +108,19 @@ namespace UsedCars.Controllers
                 return View(err);
 
             }
-
+            else
+            {
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
+                    {
+                        new Claim("Id", user.ID.ToString()),
+                        new Claim("Username", user.Name),
+                    }, CookieAuthenticationDefaults.AuthenticationScheme)),
+                    new AuthenticationProperties());
+                return RedirectToAction("Index", "Home");
+            }
+            /*
             var claims = new List<Claim> { new Claim(ClaimTypes.Email, user.Email) };
 
             var claimsIdentity = new ClaimsIdentity(
@@ -144,6 +156,7 @@ namespace UsedCars.Controllers
                 authProperties);
 
             return RedirectToAction("Index", "Home");
+            */
         }
 
         [Authorize]
