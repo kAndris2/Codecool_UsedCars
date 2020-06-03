@@ -52,16 +52,6 @@ namespace UsedCars
             throw new ArgumentException($"Invalid User ID! - ('{id}')");
         }
 
-        public UserModel GetUserByEmail(string email)
-        {
-            foreach (UserModel user in Users)
-            {
-                if (user.Email.Equals(email))
-                    return user;
-            }
-            throw new ArgumentException($"Invalid User email! - ('{email}')");
-        }
-
         public void EditUser(int id, string name, string email, string password, string birth, bool? gender, int wallet, string introduction)
         {
             long milisec = 0;
@@ -171,7 +161,7 @@ namespace UsedCars
             CreatePurchase(shopid, vehicle.Brand, vehicle.Price);
         }
         
-        public void CreateVehicle(string brand, string model, string type, string fuel, string type_des, int odometer, int vintage, bool validity, int price, int cylinder, int performance, int shopid, string description)
+        public VehicleModel CreateVehicle(string brand, string model, string type, string fuel, string type_des, int odometer, int vintage, bool validity, int price, int cylinder, int performance, int shopid, string description)
         {
             int id = 0;
             long milisec = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -225,26 +215,16 @@ namespace UsedCars
                 null,
                 milisec
             );
-            AddVehicleTo(vehicle, shopid, null);
+            AddVehicleTo(vehicle);
+            return vehicle;
         }
 
-        public void AddVehicleTo(VehicleModel vehicle, int? shopid, int? userid)
+        public void AddVehicleTo(VehicleModel vehicle)
         {
-            if (userid != null)
-            {
-                GetUserByID(int.Parse($"{userid}")).AddVehicle(vehicle);
-            }
+            if (vehicle.User_ID != null)
+                GetUserByID(int.Parse($"{vehicle.User_ID}")).AddVehicle(vehicle);
             else
-            {
-                foreach (UserModel user in Users)
-                {
-                    foreach (ShopModel shop in user.Shops)
-                    {
-                        if (shop.ID.Equals(shopid))
-                            shop.AddVehicle(vehicle);
-                    }
-                }
-            }
+                GetShopByID(int.Parse($"{vehicle.Shop_ID}")).AddVehicle(vehicle);
         }
 
         public void EditVehicle(int id, string brand, string model, string type, string fuel, string type_des, int odometer, int vintage, bool validity, int price, int cylinder, int performance, string description)
@@ -402,7 +382,7 @@ namespace UsedCars
         /// </summary>
         /// <param name="mode"></param>
         /// <returns></returns>
-        private List<VehicleModel> GetVehicles(bool mode)
+        public List<VehicleModel> GetVehicles(bool mode)
         {
             List<VehicleModel> Vehicles = new List<VehicleModel>();
 
@@ -422,31 +402,7 @@ namespace UsedCars
 
         public VehicleModel GetVehicleByID(int id)
         {
-            VehicleModel vehicle = null;
-
-            foreach (UserModel user in Users)
-            {
-                if (user.Vehicles.Count >= 1)
-                {
-                    vehicle = user.Vehicles.FirstOrDefault(v => v.ID == id);
-                }
-            }
-
-            if (vehicle == null)
-            {
-                foreach (ShopModel shop in GetShops())
-                {
-                    if (shop.Vehicles.Count >= 1)
-                    {
-                        vehicle = shop.Vehicles.FirstOrDefault(v => v.ID == id);
-                    }
-                }
-            }
-
-            if (vehicle == null)
-                throw new ArgumentException($"Invalid Vehicle ID! - ('{id}')");
-            else
-                return vehicle;
+            return GetVehicles(false).FirstOrDefault(v => v.ID == id);
         }
 
         public String GetCapacity(string value)
@@ -590,9 +546,9 @@ namespace UsedCars
                     cmd.Parameters.AddWithValue("message", message);
                     cmd.Parameters.AddWithValue("date", milisec);
                     cmd.Parameters.AddWithValue("ownerid", ownerid);
-                    cmd.Parameters.AddWithValue("userid", table_name == "user" ? ownerid : GiveDBNull());
-                    cmd.Parameters.AddWithValue("vehicleid", table_name == "vehicle" ? ownerid : GiveDBNull());
-                    cmd.Parameters.AddWithValue("shopid", table_name == "shop" ? ownerid : GiveDBNull());
+                    cmd.Parameters.AddWithValue("userid", table_name == "user" ? recordid : GiveDBNull());
+                    cmd.Parameters.AddWithValue("vehicleid", table_name == "vehicle" ? recordid : GiveDBNull());
+                    cmd.Parameters.AddWithValue("shopid", table_name == "shop" ? recordid : GiveDBNull());
                     //
                     var reader = cmd.ExecuteReader();
                     reader.Read();
@@ -611,36 +567,22 @@ namespace UsedCars
                 table_name == "vehicle" ? recordid : null,
                 table_name == "shop" ? recordid : null
             );
-            AddCommentTo(comment, comment.User_ID, comment.Vehicle_ID, comment.Shop_ID);
+            AddCommentTo(comment);
         }
 
-        private void AddCommentTo(CommentModel comment, int? userid, int? vehicleid, int? shopid)
+        private void AddCommentTo(CommentModel comment)
         {
-            if (userid != null)
+            if (comment.User_ID != null)
             {
-                GetUserByID(int.Parse($"{userid}")).AddComment(comment);
+                GetUserByID(int.Parse($"{comment.User_ID}")).AddComment(comment);
             }
-            else if (vehicleid != null)
+            else if (comment.Shop_ID != null)
             {
-                foreach (UserModel user in Users)
-                {
-                    foreach (VehicleModel vehicle in user.Vehicles)
-                    {
-                        if (vehicle.ID.Equals(vehicleid))
-                            vehicle.AddComment(comment);
-                    }
-                }
+                GetShopByID(int.Parse($"{comment.Shop_ID}")).AddComment(comment);
             }
-            else if (shopid != null)
+            else if (comment.Vehicle_ID != null)
             {
-                foreach (UserModel user in Users)
-                {
-                    foreach (ShopModel shop in user.Shops)
-                    {
-                        if (shop.ID.Equals(shopid))
-                            shop.AddComment(comment);
-                    }
-                }
+                GetVehicleByID(int.Parse($"{comment.Vehicle_ID}")).AddComment(comment);
             }
         }
 
@@ -723,28 +665,50 @@ namespace UsedCars
                 table_name == "shop" ? ownerid : null
             );
 
-            AddPictureTo(picture, picture.User_ID, picture.Vehicle_ID, picture.Shop_ID);
+            AddPictureTo(picture);
         }
 
-        private void AddPictureTo(PictureModel picture, int? userid, int? vehicleid, int? shopid)
+        private void AddPictureTo(PictureModel picture)
         {
-            if (userid != null)
+            if (picture.User_ID != null)
             {
-                GetUserByID(int.Parse($"{userid}")).AddPicture(picture);
+                GetUserByID(int.Parse($"{picture.User_ID}")).AddPicture(picture);
             }
-            else if (vehicleid != null)
+            else if (picture.Vehicle_ID != null)
             {
-                GetVehicleByID(int.Parse($"{vehicleid}")).AddPicture(picture);
+                GetVehicleByID(int.Parse($"{picture.Vehicle_ID}")).AddPicture(picture);
             }
-            else if (shopid != null)
+            else if (picture.Shop_ID != null)
             {
-                GetShopByID(int.Parse($"{shopid}")).AddPicture(picture);
+                GetShopByID(int.Parse($"{picture.Shop_ID}")).AddPicture(picture);
             }
+        }
+
+        public List<PictureModel> GetPictures()
+        {
+            List<PictureModel> pictures = new List<PictureModel>();
+
+            foreach (UserModel user in Users)
+            {
+                pictures.AddRange(user.Pictures);
+            }
+            foreach (ShopModel shop in GetShops())
+            {
+                pictures.AddRange(shop.Pictures);
+            }
+            foreach (VehicleModel vehicle in GetVehicles(false))
+            {
+                pictures.AddRange(vehicle.Pictures);
+            }
+
+            return pictures;
         }
 
         //-SHOP FUNCTIONS---------------------------------------------------------------------------------------------------
         public UserModel GetShopOwner(int? shopid)
         {
+            if (shopid == null)
+                return null;
             return GetUserByID(GetShopByID(int.Parse($"{shopid}")).Owner_ID);
         }
         
@@ -794,9 +758,9 @@ namespace UsedCars
             }
         }
 
-        public void CreateShop(string name, string address, string email)
+        public void CreateShop(string name, string address, int userid)
         {
-            UserModel owner = GetUserByEmail(email);
+            UserModel owner = GetUserByID(userid);
             int id = 0;
             long milisec = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             string sqlstr = "INSERT INTO shops " +
@@ -1092,6 +1056,10 @@ namespace UsedCars
                 {
                     GetVehicleByID(int.Parse($"{like.Vehicle_ID}")).RemoveLike(like);
                 }
+                else if (like.Comment_ID != null)
+                {
+                    GetCommentByID(int.Parse($"{like.Comment_ID}")).RemoveLike(like);
+                }
             }
             else if (table == "comments")
             {
@@ -1229,7 +1197,7 @@ namespace UsedCars
                             reader["validity"].ToString() == "True",
                             Convert.ToInt64(reader["registration_date"].ToString())
                             );
-                            AddVehicleTo(vehicle, vehicle.Shop_ID, vehicle.User_ID);
+                            AddVehicleTo(vehicle);
                         }
                     }
                 }
@@ -1251,7 +1219,7 @@ namespace UsedCars
                             CheckIntOrNull(reader["vehicle_id"].ToString()),
                             CheckIntOrNull(reader["shop_id"].ToString())
                             );
-                            AddCommentTo(comment, comment.User_ID, comment.Vehicle_ID, comment.Shop_ID);
+                            AddCommentTo(comment);
                         }
                     }
                 }
@@ -1291,7 +1259,26 @@ namespace UsedCars
                             CheckIntOrNull(reader["vehicle_id"].ToString()),
                             CheckIntOrNull(reader["shop_id"].ToString())
                             );
-                            AddPictureTo(picture, picture.User_ID, picture.Vehicle_ID, picture.Shop_ID);
+                            AddPictureTo(picture);
+                        }
+                    }
+                }
+
+                using (var cmd = new NpgsqlCommand("SELECT * FROM purchases", conn))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            PurchaseModel purchase = new PurchaseModel
+                            (
+                            int.Parse(reader["id"].ToString()),
+                            int.Parse(reader["shop_id"].ToString()),
+                            int.Parse(reader["amount"].ToString()),
+                            int.Parse(reader["year"].ToString()),
+                            reader["brand"].ToString()
+                            );
+                            GetShopByID(purchase.Shop_ID).AddPurchase(purchase);
                         }
                     }
                 }

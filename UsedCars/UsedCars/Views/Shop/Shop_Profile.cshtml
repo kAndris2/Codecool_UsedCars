@@ -3,6 +3,10 @@
     ViewData["Title"] = Model.Name + "'s profile";
     IDAO Singleton = IDAO.Singleton;
     Singleton.UpdateViews("shops", Model.ID);
+    UserModel user = null;
+
+    if (User.Identity.IsAuthenticated)
+        user = Singleton.GetUserByID(int.Parse(User.FindFirst("Id").Value));
 }
 
 <link rel="stylesheet" href="~/css/slideshow.css" />
@@ -43,13 +47,16 @@
             <span class="badge badge-light">@Model.Views</span>
         </div>
 
-        @if (Model.Owner_ID == int.Parse(User.FindFirst("Id").Value))
+        @if (User.Identity.IsAuthenticated)
         {
-            <div class="float-right">
-                <a href="@Url.Action("Shop_Edit", "Shop", new { id = Model.ID})">
-                    <img src="~/pics/settings.jpg" width="80" height="80" />
-                </a>
-            </div>
+            @if (Model.Owner_ID == user.ID || user.Rank == "Admin")
+            {
+                <div class="float-right">
+                    <a href="@Url.Action("Shop_Edit", "Shop", new { id = Model.ID })">
+                        <img src="~/pics/settings.jpg" width="80" height="80" />
+                    </a>
+                </div>
+            }
         }
 
         <br><br><h5 class="card-title">
@@ -95,20 +102,25 @@
         @if (User.Identity.IsAuthenticated)
         {
             <div class="container row">
-                <div id="siteLikeBar" class="col-auto" data-ownerid="@User.FindFirst("Id").Value" data-modelid="@Model.ID" data-table="shop">
+                <div id="siteLikeBar" class="col-auto" data-ownerid="@user.ID" data-modelid="@Model.ID" data-table="shop">
                     <a href="#">
-                        <img style="display:block" id="dislike" onclick="dislikeShop()" src="~/pics/liked.png" width="30" height="30" />
+                        <img style="display:block" id="dislike" onclick="dislikeSite()" src="~/pics/liked.png" width="30" height="30" />
                     </a>
                     <a href="#">
-                        <img style="display:block" id="like" onclick="likeShop()" src="~/pics/like.png" width="30" height="30" />
+                        <img style="display:block" id="like" onclick="likeSite()" src="~/pics/like.png" width="30" height="30" />
                     </a>
                 </div>
 
                 <div class="col-auto">
-                    <form method="post" asp-action="Shop_Garage" asp-controller="Shop">
+                    <a href='@Url.Action("Shop_Garage", "Shop", new { id = Model.ID})'>
+                        <img src="~/pics/garage.jpg" width="35" height="35" />
+                    </a>
+                    <!--
+                    <form method="get" asp-action="Shop_Garage" asp-controller="Shop">
                         <input type="hidden" name="shopid" value="@Model.ID" />
                         <input type="image" src="~/pics/garage.jpg" width="35" height="35" alt="Submit Form" />
                     </form>
+                    -->
                 </div>
 
                 <div class="col-auto">
@@ -166,7 +178,7 @@
         @if (User.Identity.IsAuthenticated)
         {
             <div class="container row">
-                @if (int.Parse(User.FindFirst("Id").Value) == comment.Owner_ID)
+                @if (user.ID == comment.Owner_ID || user.Rank == "Admin")
                 {
                     <div class="col-auto">
                         <a href="#">
@@ -175,7 +187,7 @@
                     </div>
                 }
 
-            <div id="commentLikeBar" class="col-auto" data-ownerid="@User.FindFirst("Id").Value">
+            <div id="commentLikeBar" class="col-auto" data-ownerid="@user.ID">
                 <a href="#">
                     <img style="display:block" id="dislike_@comment.ID" onclick="dislikeComment(@comment.ID)" src="~/pics/liked.jpg" width="30" height="30" />
                 </a>
@@ -211,7 +223,7 @@
                             <label for="message-text" class="col-form-label">Message:</label>
                             <textarea class="form-control" name="message"></textarea>
                         </div>
-                        <input type="hidden" name="ownerid" value="@User.FindFirst("Id").Value" />
+                        <input type="hidden" name="ownerid" value="@user.ID" />
                         <input type="hidden" name="shopid" value="@Model.ID" />
 
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

@@ -25,7 +25,7 @@
 
             <div class="media-body">
                 <h5 class="mt-0">
-                    @Html.ActionLink($"{vehicle.Brand} {vehicle.Model} {Singleton.GetCapacity($"{vehicle.Cylinder_Capacity}")} {string.Join(' ', vehicle.Type_Designation)}", "Vehicle_Profile", "Vehicle", new { id = vehicle.ID })
+                    @Html.ActionLink($"{vehicle.Brand} {vehicle.Model} {Singleton.GetCapacity($"{vehicle.Cylinder_Capacity}")} {string.Join(" ", vehicle.Type_Designation.Split(","))}", "Vehicle_Profile", "Vehicle", new { id = vehicle.ID })
                 </h5>
 
                 <p>

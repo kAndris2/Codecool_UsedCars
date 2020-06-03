@@ -1,6 +1,6 @@
 ﻿@model ShopModel
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Shop Creator";
 }
 
 <h1>Shop - Creator</h1>
@@ -17,6 +17,6 @@
         @Html.TextBoxFor(m => m.Address, new { Name = "address", @class = "form-control", @required = "" })
     </div>
 
-    <input type="hidden" name="email" value="@User.Claims.First().Value" />
+    <input type="hidden" name="userid" value="@User.FindFirst("Id").Value" />
     <button type="submit" class="btn btn-success">Add</button>
 }

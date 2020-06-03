@@ -3,6 +3,10 @@
     ViewData["Title"] = Model.Name + "'s profile";
     IDAO Singleton = IDAO.Singleton;
     Singleton.UpdateViews("users", Model.ID);
+    UserModel user = null;
+
+    if (User.Identity.IsAuthenticated)
+        user = Singleton.GetUserByID(int.Parse(User.FindFirst("Id").Value));
 }
 
 <link rel="stylesheet" href="~/css/slideshow.css" />
@@ -45,7 +49,7 @@
 
         @if (User.Identity.IsAuthenticated)
         {
-            @if (Model.ID == int.Parse(User.FindFirst("Id").Value))
+            @if (Model.ID == user.ID || user.Rank == "Admin")
             {
                 <div class="float-right">
                     <a href="@Url.Action("User_Edit", "User", new { id = Model.ID })">
@@ -105,7 +109,7 @@
         @if (User.Identity.IsAuthenticated)
         {
             <div class="container row">
-                <div id="siteLikeBar" class="col-auto" data-ownerid="@User.FindFirst("Id").Value" data-modelid="@Model.ID" data-table="user">
+                <div id="siteLikeBar" class="col-auto" data-ownerid="@user.ID" data-modelid="@Model.ID" data-table="user">
                     <a href="#">
                         <img style="display:block" id="dislike" onclick="dislikeSite()" src="~/pics/liked.jpg" width="30" height="30" />
                     </a>
@@ -167,7 +171,7 @@
         @if (User.Identity.IsAuthenticated)
         {
             <div class="container row">
-                @if (int.Parse(User.FindFirst("Id").Value) == comment.Owner_ID)
+                @if (user.ID == comment.Owner_ID || user.Rank == "Admin")
                 {
                     <div class="col-auto">
                         <a href="@Url.Action("Edit_Comment", "Comment", new { id = comment.ID})">
@@ -176,7 +180,7 @@
                     </div>
                 }
 
-                <div id="commentLikeBar" class="col-auto" data-ownerid="@User.FindFirst("Id").Value">
+                <div id="commentLikeBar" class="col-auto" data-ownerid="@user.ID">
                     <a href="#">
                         <img style="display:block" id="dislike_@comment.ID" onclick="dislikeComment(@comment.ID)" src="~/pics/liked.jpg" width="30" height="30" />
                     </a>
@@ -213,7 +217,7 @@
                             <label for="message-text" class="col-form-label">Message:</label>
                             <textarea class="form-control" name="message"></textarea>
                         </div>
-                        <input type="hidden" name="ownerid" value="@User.FindFirst("Id").Value" />
+                        <input type="hidden" name="ownerid" value="@user.ID" />
                         <input type="hidden" name="userid" value="@Model.ID" />
 
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

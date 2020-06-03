@@ -1,62 +1,109 @@
-﻿@model ShopModel
-@{
-    ViewData["Title"] = Model.Name + "'s garage";
-    IDAO Singleton = IDAO.Singleton;
-}
+﻿<br>
+<div class="float-right">
+    <button onclick="backToProfile()" class="btn-danger">Back</button>
+</div>
 
-<h1 class="card-text">
-    @Html.ActionLink(Model.Name, "Shop_Profile", "Shop", new { id = Model.ID })
-    's garage:
-</h1>
+<h1 id="owner" class="card-text"></h1>
 
-@foreach (VehicleModel vehicle in Model.Vehicles)
-{
-    if (vehicle.User_ID == null)
-    {
-        <div class="media" style="background-color:white;">
+<div id="creator" class="container" width:1900px; border:1px solid black;">
 
-            <a href="@Url.Action("Vehicle_Profile", "Vehicle", new { id = vehicle.ID})">
-                @if (vehicle.Pictures.Count >= 1)
-                {
-                    <img class="mr-3" src="@vehicle.GetFirstPicture()" width="200" height="140" />
-                }
-                else
-                {
-                    <img class="mr-3" src="~/pics/no_img.png" width="200" height="140" />
-                }
-            </a>
+    <div class="row">
 
-            <div class="media-body">
-                <h5 class="mt-0">
-                    @Html.ActionLink($"{vehicle.Brand} {vehicle.Model} {Singleton.GetCapacity($"{vehicle.Cylinder_Capacity}")} {string.Join(' ', vehicle.Type_Designation)}", "Vehicle_Profile", "Vehicle", new { id = vehicle.ID })
-                </h5>
-
-                <p>
-                    @vehicle.Fuel,
-                    @vehicle.Vintage,
-                    @vehicle.Cylinder_Capacity cm<sup>3</sup>,
-                    @vehicle.Performance kW,
-                    @vehicle.Odometer km
-                </p>
-
-                <span style="display:block;width:650px;overflow:hidden; white-space:nowrap;text-overflow:ellipsis;">
-                    @vehicle.Description
-                </span>
-
-                @if (Singleton.GetShopByID(int.Parse($"{vehicle.Shop_ID}")).Pictures.Count >= 1)
-                {
-                    <a href="@Url.Action("Shop_Profile", "Shop", new { id = vehicle.Shop_ID})">
-                        <img class="ml-3 float-lg-right" src="@Singleton.GetShopByID(int.Parse($"{vehicle.Shop_ID}")).GetFirstPicture()" width="80" height="75">
-                    </a>
-                }
-
-                <p>(ID: @vehicle.ID)</p>
-            </div>
-
-            <h6 class="card-text">@string.Format("{0:C}", vehicle.Price)</h6>
-
+        <div class="col-sm-2">
+            <label>
+                <b>Brand:</b>
+            </label><br>
+            <input type="text" id="brand" required />
         </div>
-        <br>
-    }
-}
 
+        <div class="col-sm-2">
+            <label>
+                <b>Model:</b>
+            </label>
+            <input type="text" id="model" required />
+        </div>
+
+        <div class="col-sm-2">
+            <label>
+                <b>Type:</b>
+            </label>
+            <input type="text" id="type" required />
+        </div>
+
+        <div class="col-sm-2">
+            <label>
+                <b>Type designation:</b>
+            </label>
+            <input type="text" id="type_designation" required />
+        </div>
+
+        <div class="col-sm-2">
+            <label>
+                <b>Fuel:</b>
+            </label>
+            <input type="text" id="fuel" required />
+        </div>
+
+        <div class="col-sm-2">
+            <label>
+                <b>Vintage:</b>
+            </label><br>
+            <select id="vintage"></select>
+        </div>
+
+        <div class="col-sm-1">
+            <label>
+                <b>Validity:</b>
+            </label><br>
+            <select id="validity">
+                <option value="Valid">Valid</option>
+                <option value="Invalid">Invalid</option>
+            </select>
+        </div>
+
+        <div class="col-sm-2">
+            <label>
+                <b>Price:</b>
+            </label><br>
+            <input type="number" id="price" placeholder="Ft" />
+        </div>
+
+        <div class="col-sm-2">
+            <label>
+                <b>Cylinder capacity:</b>
+            </label><br>
+            <input type="number" id="cylinder" placeholder="cm3" />
+        </div>
+
+        <div class="col-sm-2">
+            <label>
+                <b>Performance:</b>
+            </label><br>
+            <input type="number" id="performance" placeholder="kW" />
+        </div>
+
+        <div class="col-sm-2">
+            <label>
+                <b>Odometer:</b>
+            </label>
+            <input type="number" id="odometer" placeholder="km" required />
+        </div>
+
+        <div class="col-7">
+            <label>
+                <b>Description:</b>
+            </label><br>
+            <textarea id="description" cols="100" rows="7" required></textarea>
+        </div>
+
+    </div>
+
+    <input type="hidden" id="shopid" />
+    <button onclick="createVehicle()" class="btn btn-success">Add new Car</button>
+
+</div>
+<br />
+
+<div id="vehicles"></div>
+
+<script src="~/js/shop_garage.js"></script>

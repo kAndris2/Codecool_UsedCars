@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace UsedCars.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         public IDAO IDAO = IDAO.Singleton;
@@ -15,11 +17,18 @@ namespace UsedCars.Controllers
             return View("User_Profile", IDAO.GetUserByID(id));
         }
 
+        [AllowAnonymous]
         [HttpGet("User_Profile/{id}")]
         public IActionResult User_Profile(int id)
 
         {
             return View(IDAO.GetUserByID(id));
+        }
+
+        [AllowAnonymous]
+        public IActionResult User_List()
+        {
+            return View(IDAO);
         }
 
         [HttpGet("User_Edit/{id}")]

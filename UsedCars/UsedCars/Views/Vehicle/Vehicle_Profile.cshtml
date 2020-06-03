@@ -6,7 +6,7 @@
     UserModel user = null;
 
     if (User.Identity.IsAuthenticated)
-        user = Singleton.GetUserByEmail(User.Claims.First().Value);
+        user = Singleton.GetUserByID(int.Parse(User.FindFirst("Id").Value));
 }
 
 <link rel="stylesheet" href="~/css/slideshow.css" />
@@ -47,9 +47,21 @@
             <span class="badge badge-light">@Model.Views</span>
         </div>
 
-        @if (Model.Shop_ID != null && Singleton.GetShopOwner(Model.Shop_ID) != user || Model.User_ID != null && Model.User_ID != user.ID)
+        @if (User.Identity.IsAuthenticated)
         {
-            @if (User.Identity.IsAuthenticated && Model.User_ID == null)
+            @if (Singleton.GetShopOwner(Model.Shop_ID) == user || Model.User_ID.Equals(user.ID) || user.Rank == "Admin")
+            {
+                <div class="float-right">
+                    <a href="@Url.Action("Vehicle_Edit", "Vehicle", new { id = Model.ID })">
+                        <img src="~/pics/settings_veh.png" width="80" height="80" />
+                    </a>
+                </div>
+            }
+        }
+
+        @if (Model.User_ID == null)
+        {
+            @if (User.Identity.IsAuthenticated)
             {
                 @if (user.Wallet >= Model.Price)
                 {
@@ -69,15 +81,7 @@
                     </div>
                 }
             }
-        }
-        else
-        {
-            <div class="float-right">
-                <a href="@Url.Action("Vehicle_Edit", "Vehicle", new { id = Model.ID})">
-                    <img src="~/pics/settings_veh.png" width="80" height="80" />
-                </a>
-            </div>
-        }
+         }
 
         <br><br><h5 class="card-title">#@Model.ID - @Model.Brand @Model.Model @Singleton.GetCapacity($"{Model.Cylinder_Capacity}") @string.Join(' ', Model.Type_Designation)</h5>
 
@@ -140,12 +144,12 @@
         @if (User.Identity.IsAuthenticated)
         {
             <div class="container row">
-                <div id="siteLikeBar" class="col-auto" data-ownerid="@User.FindFirst("Id").Value" data-modelid="@Model.ID" data-table="vehicle">
+                <div id="siteLikeBar" class="col-auto" data-ownerid="@user.ID" data-modelid="@Model.ID" data-table="vehicle">
                     <a href="#">
-                        <img style="display:block" id="dislike" onclick="dislikeVeh()" src="~/pics/liked.png" width="30" height="30" />
+                        <img style="display:block" id="dislike" onclick="dislikeSite()" src="~/pics/liked.png" width="30" height="30" />
                     </a>
                     <a href="#">
-                        <img style="display:block" id="like" onclick="likeVeh()" src="~/pics/like.png" width="30" height="30" />
+                        <img style="display:block" id="like" onclick="likeSite()" src="~/pics/like.png" width="30" height="30" />
                     </a>
                 </div>
 
@@ -197,7 +201,7 @@
         @if (User.Identity.IsAuthenticated)
         {
             <div class="container row">
-                @if (user.ID == comment.Owner_ID)
+                @if (user.ID == comment.Owner_ID || user.Rank == "Admin")
                 {
                     <div class="col-auto">
                         <a href="#">
@@ -206,7 +210,7 @@
                     </div>
                 }
 
-            <div id="commentLikeBar" class="col-auto" data-ownerid="@User.FindFirst("Id").Value">
+            <div id="commentLikeBar" class="col-auto" data-ownerid="@user.ID">
                 <a href="#">
                     <img style="display:block" id="dislike_@comment.ID" onclick="dislikeComment(@comment.ID)" src="~/pics/liked.jpg" width="30" height="30" />
                 </a>

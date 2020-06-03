@@ -7,27 +7,27 @@ namespace UsedCars.Models
 {
     public class VehicleModel
     {
-        public String Brand { get; private set; }
-        public String Model { get; private set; }
-        public String Type { get; private set; }
-        public String Fuel { get; private set; }
-        public String Description { get; private set; }
+        public String Brand { get; set; }
+        public String Model { get; set; }
+        public String Type { get; set; }
+        public String Fuel { get; set; }
+        public String Description { get; set; }
+        public String Type_Designation { get; set; }
         public int ID { get; }
-        public int Vintage { get; private set; }
-        public int Price { get; private set; }
-        public int Cylinder_Capacity { get; private set; }
-        public int Performance { get; private set; }
-        public int Odometer { get; private set; }
-        public int Views { get; private set; }
-        public int Votes { get; private set; }
-        public bool Validity { get; private set; }
-        public int? Shop_ID { get; private set; }
-        public int? User_ID { get; private set; }
+        public int Vintage { get; set; }
+        public int Price { get; set; }
+        public int Cylinder_Capacity { get; set; }
+        public int Performance { get; set; }
+        public int Odometer { get; set; }
+        public int Views { get; set; }
+        public int Votes { get; set; }
+        public bool Validity { get; set; }
+        public int? Shop_ID { get; set; }
+        public int? User_ID { get; set; }
         public long Registration_Date { get; }
 
         public List<PictureModel> Pictures = new List<PictureModel>();
         public List<CommentModel> Comments = new List<CommentModel>();
-        public List<String> Type_Designation = new List<string>();
         public List<LikeModel> Likes = new List<LikeModel>();
 
         public VehicleModel(int id, string brand, string model, int vintage, string type, int price, string fuel, string type_des, int cylinder, int performance, int odometer, string description, bool validity, int? shopid, int? userid, long register)
@@ -39,7 +39,7 @@ namespace UsedCars.Models
             Type = type;
             Price = price;
             Fuel = fuel;
-            Type_Designation = type_des.Split(',').ToList();
+            Type_Designation = type_des;
             Cylinder_Capacity = cylinder;
             Performance = performance;
             Odometer = odometer;
@@ -59,7 +59,7 @@ namespace UsedCars.Models
             Type = type;
             Price = price;
             Fuel = fuel;
-            Type_Designation = type_des.Split(',').ToList();
+            Type_Designation = type_des;
             Cylinder_Capacity = cylinder;
             Performance = performance;
             Odometer = odometer;
@@ -71,6 +71,8 @@ namespace UsedCars.Models
             Validity = validity;
             Registration_Date = register;
         }
+
+        public VehicleModel() { }
 
         public DateTime GetDate() { return new DateTime(1970, 1, 1).AddMilliseconds(double.Parse(Registration_Date.ToString())); }
         public String GetFirstPicture() { return Pictures.Count == 0 ? null : Pictures[0].Route; }
@@ -93,7 +95,7 @@ namespace UsedCars.Models
             Cylinder_Capacity = cylinder;
             Performance = performance;
             Description = description;
-            Type_Designation = type_des.Split(',').ToList();
+            Type_Designation = type_des;
         }
 
         public void AddPicture(PictureModel picture) { Pictures.Add(picture); }

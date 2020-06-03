@@ -18,17 +18,19 @@ namespace UsedCars.Controllers
             return View();
         }
 
-        public IActionResult List()
+        [AllowAnonymous]
+        public IActionResult Shop_List()
         {
             return View(IDAO);
         }
 
-        public IActionResult Create_Shop([FromForm(Name = "name")] string name, [FromForm(Name = "address")] string address, [FromForm(Name = "email")] string email)
+        public IActionResult Create_Shop([FromForm(Name = "name")] string name, [FromForm(Name = "address")] string address, [FromForm(Name = "userid")] int userid)
         {
-            IDAO.CreateShop(name, address, email);
+            IDAO.CreateShop(name, address, userid);
             return RedirectToAction("Index", "Home");
         }
 
+        [AllowAnonymous]
         [HttpGet("Shop_Profile/{id}")]
         public IActionResult Shop_Profile(int id)
         {
@@ -43,8 +45,7 @@ namespace UsedCars.Controllers
 
         public IActionResult Editor([FromForm(Name = "name")] string name, [FromForm(Name = "address")] string address, [FromForm(Name = "description")] string description, [FromForm(Name = "id")] int id, [FromForm(Name = "webpage")] string webpage)
         {
-            //IDAO.EditShop(id, name, address, description, webpage);
-            int userid = int.Parse(HttpContext.User.FindFirstValue("Id"));
+            IDAO.EditShop(id, name, address, description, webpage);
             return View("Shop_Profile", IDAO.GetShopByID(id));
         }
 
@@ -62,9 +63,11 @@ namespace UsedCars.Controllers
             return View("Shop_Profile", IDAO.GetShopByID(shopid));
         }
 
-        public IActionResult Shop_Garage([FromForm(Name = "shopid")] int shopid)
+        [HttpGet("Shop_Garage/{id}")]
+        public IActionResult Shop_Garage(int id)
         {
-            return View(IDAO.GetShopByID(shopid));
+            //return View(IDAO.GetShopByID(shopid));
+            return View();
         }
 
         public IActionResult Shop_Sales([FromForm(Name = "shopid")] int shopid)

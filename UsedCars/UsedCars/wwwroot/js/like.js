@@ -97,35 +97,43 @@ function onCommentLikeChange() {
 
 function getComments() {
     commentList = JSON.parse(this.responseText);
-
-    const xhr = new XMLHttpRequest();
-    xhr.addEventListener('load', getLikes);
-    xhr.open('POST', '/Like/GetLikes');
-    xhr.send();
+    UserLikedThis();
 }
 
-function getLikes() {
-    likeList = JSON.parse(this.responseText);
+function checkCommentLikes() {
     const item = document.getElementById("commentLikeBar");
 
-    commentList.forEach((comment) => {
+    //console.log("comments length = " + commentList.length);
+    commentList.forEach(comment => {
+        console.log("commentid = " + comment.id);
         if (likeList.length >= 1) {
-            likeList.forEach((like) => {
+            likeList.forEach(like => {
                 if (like.comment_ID == comment.id && like.owner_ID == item.dataset.ownerid) {
-                    document.getElementById("dislike_" + comment.id).style.display = "block";
-                    document.getElementById("like_" + comment.id).style.display = "none";
+                    console.log("bekapcs " + like.id);
+                    commentLikeSwitch(true, comment.id);
                 }
                 else {
-                    document.getElementById("dislike_" + comment.id).style.display = "none";
-                    document.getElementById("like_" + comment.id).style.display = "block";
+                    console.log("kikapcs " + like.id);
+                    commentLikeSwitch(false, comment.id);
                 }
             });
         }
         else {
-            document.getElementById("dislike_" + comment.id).style.display = "none";
-            document.getElementById("like_" + comment.id).style.display = "block";
+            console.log("nem lép be");
+            commentLikeSwitch(false, comment.id);
         }
     });
+}
+
+function commentLikeSwitch(mode, id) {
+    if (mode) {
+        document.getElementById("dislike_" + id).style.display = "block";
+        document.getElementById("like_" + id).style.display = "none";
+    }
+    else {
+        document.getElementById("dislike_" + id).style.display = "none";
+        document.getElementById("like_" + id).style.display = "block";
+    }
 }
 
 function siteLikeSwitch(mode) {
@@ -141,22 +149,32 @@ function siteLikeSwitch(mode) {
 
 function checkLikes() {
     const item = document.getElementById("siteLikeBar");
-    const likes = JSON.parse(this.responseText);
+    likeList = JSON.parse(this.responseText);
+    var table = [];
 
-    if (likes.length >= 1) {
-        likes.forEach((like) => {
-            if (like.owner_ID == item.dataset.ownerid && item.dataset.modelid == like.id) {
-                if (item.dataset.table == "user" || item.dataset.table == "shop" || item.dataset.table == "vehicle") {
-                    siteLikeSwitch(true);
-                }
+    if (likeList.length >= 1) {
+        likeList.forEach((like) => {
+            if (like.owner_ID == item.dataset.ownerid && item.dataset.table == "user" && item.dataset.modelid == like.user_ID ||
+                like.owner_ID == item.dataset.ownerid && item.dataset.table == "shop" && item.dataset.modelid == like.shop_ID ||
+                like.owner_ID == item.dataset.ownerid && item.dataset.table == "vehicle" && item.dataset.modelid == like.vehicle_ID) {
+                table.push(true);
             }
             else {
-                siteLikeSwitch(false);
+                table.push(false);
             }
         });
     }
     else
         siteLikeSwitch(false);
+
+    if (table.includes(true)) {
+        siteLikeSwitch(true);
+    }
+    else {
+        siteLikeSwitch(false);
+    }
+
+    checkCommentLikes();
 }
 
 function UserLikedThis() {
@@ -166,7 +184,6 @@ function UserLikedThis() {
     xhr.send();
 }
 
-UserLikedThis();
 var commentList;
 var likeList;
 let actualCommentID;

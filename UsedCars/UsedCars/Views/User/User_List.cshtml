@@ -1,0 +1,40 @@
+﻿@model IDAO
+@{
+    ViewData["Title"] = "User List";
+}
+
+<br>
+<table class="table table-striped table-dark">
+    <thead class="thead-dark">
+        <tr>
+            <th class="th-sm text-center">Image</th>
+            <th class="th-sm text-center">Name</th>
+            <th class="th-sm text-center">E-mail</th>
+            <th class="th-sm text-center">Rank</th>
+            <th class="th-sm text-center">Gender</th>
+            <th class="th-sm text-center">Views</th>
+        </tr>
+    </thead>
+    @foreach (UserModel user in Model.Users)
+    {
+        <tr>
+            <td class="text-center">
+                @if (user.Pictures.Count >= 1)
+                {
+                    <img src="@user.Pictures[0].Route" width="80" height="50">
+                }
+                else
+                {
+                    <img src="~/pics/no_img.png" width="80" height="50">
+                }
+            </td>
+            <td class="text-center">
+                @Html.ActionLink(user.Name, "User_Profile", new { id = user.ID })
+            </td>
+            <td class="text-center">@user.Email</td>
+            <td class="text-center">@user.Rank</td>
+            <td class="text-center">@Model.GetFormattedGender(user.Gender)</td>
+            <td class="text-center">@user.Views</td>
+        </tr>
+    }
+</table>
