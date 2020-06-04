@@ -53,7 +53,7 @@ namespace UsedCars.Controllers
         public IActionResult Delete_Shop(int id)
         {
             IDAO.Delete("shops", id);
-            return View("List", IDAO);
+            return View("Shop_List", IDAO);
         }
 
         [HttpPost]
@@ -66,13 +66,13 @@ namespace UsedCars.Controllers
         [HttpGet("Shop_Garage/{id}")]
         public IActionResult Shop_Garage(int id)
         {
-            //return View(IDAO.GetShopByID(shopid));
             return View();
         }
 
-        public IActionResult Shop_Sales([FromForm(Name = "shopid")] int shopid)
+        [HttpGet("Shop_Sales/{id}")]
+        public IActionResult Shop_Sales(int id)
         {
-            return View(IDAO.GetShopByID(shopid));
+            return View(IDAO.GetShopByID(id));
         }
     }
 }

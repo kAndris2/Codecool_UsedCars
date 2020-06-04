@@ -25,11 +25,11 @@
 
             <div class="media-body">
                 <h5 class="mt-0">
-                    @Html.ActionLink($"{vehicle.Brand} {vehicle.Model} {Singleton.GetCapacity($"{vehicle.Cylinder_Capacity}")} {string.Join(" ", vehicle.Type_Designation.Split(","))}", "Vehicle_Profile", "Vehicle", new { id = vehicle.ID })
+                    @Html.ActionLink($"#{vehicle.ID} {vehicle.Brand} {vehicle.Model} {Singleton.GetCapacity($"{vehicle.Cylinder_Capacity}")} {string.Join(" ", vehicle.Type_Designation.Split(","))}", "Vehicle_Profile", "Vehicle", new { id = vehicle.ID })
                 </h5>
 
                 <p>
-                    @vehicle.Fuel, 
+                    @vehicle.Fuel,
                     @vehicle.Vintage,
                     @vehicle.Cylinder_Capacity cm<sup>3</sup>,
                     @vehicle.Performance kW,
@@ -40,14 +40,33 @@
                     @vehicle.Description
                 </span>
 
-                @if (Singleton.GetShopByID(int.Parse($"{vehicle.Shop_ID}")).Pictures.Count >= 1)
-                {
-                    <a href="@Url.Action("Shop_Profile", "Shop", new { id = vehicle.Shop_ID})">
-                        <img class="ml-3 float-lg-right" src="@Singleton.GetShopByID(int.Parse($"{vehicle.Shop_ID}")).GetFirstPicture()" width="80" height="75">
-                    </a>
-                }
+                <div class="row">
 
-                <p>(ID: @vehicle.ID)</p>
+                    <div class="mr-4">
+                        <p class="card-text">
+                            <img src="~/pics/views.png" width="30" height="30">
+                            <span class="badge badge-light">@vehicle.Views</span>
+                        </p>
+                    </div>
+
+                    <div class="mr-4">
+                        <p class="card-text">
+                            <img src="~/pics/likecount.jpg" width="25" height="25">
+                            <span class="badge badge-light">@vehicle.Likes.Count</span>
+                        </p>
+                    </div>
+
+                    <div class="col">
+                        @if (Singleton.GetShopByID(int.Parse($"{vehicle.Shop_ID}")).Pictures.Count >= 1)
+                        {
+                            <a href="@Url.Action("Shop_Profile", "Shop", new { id = vehicle.Shop_ID})">
+                                <img class="ml-3 float-lg-right" src="@Singleton.GetShopByID(int.Parse($"{vehicle.Shop_ID}")).GetFirstPicture()" width="80" height="75">
+                            </a>
+                        }
+                    </div>
+
+                </div>
+
             </div>
 
             <h6 class="card-text">@string.Format("{0:C}", vehicle.Price)</h6>

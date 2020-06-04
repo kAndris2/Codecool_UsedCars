@@ -1,0 +1,65 @@
+﻿@model UserModel
+@{
+    ViewData["Title"] = Model.Name + "'s shops";
+}
+
+<h1 class="card-text">
+    @Html.ActionLink(Model.Name, "User_Profile", "User", new { id = Model.ID })
+    's shops:
+</h1>
+
+@foreach (ShopModel shop in Model.Shops)
+{
+    <div class="media" style="background-color:white;">
+
+        <a href="@Url.Action("Shop_Profile", "Shop", new { id = shop.ID})">
+            @if (shop.Pictures.Count >= 1)
+            {
+                <img class="mr-3" src="@shop.GetFirstPicture()" width="200" height="140" />
+            }
+            else
+            {
+                <img class="mr-3" src="~/pics/no_img.png" width="200" height="140" />
+            }
+        </a>
+
+        <div class="media-body">
+            <h5 class="mt-0">
+                @Html.ActionLink($"#{shop.ID} {shop.Name}", "Shop_Profile", "Shop", new { id = shop.ID })
+            </h5>
+
+            <p>@shop.Address</p>
+
+            @if (shop.WebPage != null)
+            {
+                <a href="@shop.WebPage">@shop.WebPage</a>
+            }
+
+            <span style="display:block;width:650px;overflow:hidden; white-space:nowrap;text-overflow:ellipsis;">
+                @shop.Description
+            </span>
+
+            <div class="row">
+                <div class="mr-4">
+                    <p class="card-text">
+                        <img src="~/pics/views.png" width="30" height="30">
+                        <span class="badge badge-light">@shop.Views</span>
+                    </p>
+                </div>
+
+                <div class="mr-4">
+                    <p class="card-text">
+                        <img src="~/pics/likecount.jpg" width="25" height="25">
+                        <span class="badge badge-light">@shop.Likes.Count</span>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <h6 class="card-text">@shop.GetDate()</h6>
+
+    </div>
+    <br>
+}
+

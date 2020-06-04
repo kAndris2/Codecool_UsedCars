@@ -130,10 +130,9 @@
                 </div>
 
                 <div class="col-auto">
-                    <form method="post" asp-action="Shop_Sales" asp-controller="Shop">
-                        <input type="hidden" name="shopid" value="@Model.ID" />
-                        <input type="image" src="~/pics/sales.jpg" width="35" height="35" alt="Submit Form" />
-                    </form>
+                    <a href='@Url.Action("Shop_Sales", "Shop", new { id = Model.ID})'>
+                        <img src="~/pics/sales.jpg" width="35" height="35" />
+                    </a>
                 </div>
             </div>
         }

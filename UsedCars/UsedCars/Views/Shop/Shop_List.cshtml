@@ -12,6 +12,8 @@
             <th class="th-sm text-center">Address</th>
             <th class="th-sm text-center">Owner</th>
             <th class="th-sm text-center">Views</th>
+            <th class="th-sm text-center">Likes</th>
+            <th class="th-sm text-center">Comments</th>
         </tr>
     </thead>
     @foreach (UserModel user in Model.Users)
@@ -35,6 +37,8 @@
                 <td class="text-center">@shop.Address</td>
                 <td class="text-center">@Html.ActionLink(Model.GetUserByID(shop.Owner_ID).Name, "User_Profile", "User", new { id = shop.Owner_ID })</td>
                 <td class="text-center">@shop.Views</td>
+                <td class="text-center">@shop.Likes.Count</td>
+                <td class="text-center">@shop.Comments.Count</td>
             </tr>
         }
     }

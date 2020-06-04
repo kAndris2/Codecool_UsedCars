@@ -58,9 +58,16 @@ namespace UsedCars.Controllers
             return View("User_Profile", IDAO.GetUserByID(userid));
         }
 
-        public IActionResult User_Garage([FromForm(Name = "userid")] int userid)
+        [HttpGet("User_Garage/{id}")]
+        public IActionResult User_Garage( int id)
         {
-            return View(IDAO.GetUserByID(userid));
+            return View(IDAO.GetUserByID(id));
+        }
+
+        [HttpGet("User_Shops/{id}")]
+        public IActionResult User_Shops(int id)
+        {
+            return View(IDAO.GetUserByID(id));
         }
     }
 }

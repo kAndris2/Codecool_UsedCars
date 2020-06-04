@@ -13,6 +13,8 @@
             <th class="th-sm text-center">Rank</th>
             <th class="th-sm text-center">Gender</th>
             <th class="th-sm text-center">Views</th>
+            <th class="th-sm text-center">Likes</th>
+            <th class="th-sm text-center">Comments</th>
         </tr>
     </thead>
     @foreach (UserModel user in Model.Users)
@@ -35,6 +37,8 @@
             <td class="text-center">@user.Rank</td>
             <td class="text-center">@Model.GetFormattedGender(user.Gender)</td>
             <td class="text-center">@user.Views</td>
+            <td class="text-center">@user.Likes.Count</td>
+            <td class="text-center">@user.Comments.Count</td>
         </tr>
     }
 </table>

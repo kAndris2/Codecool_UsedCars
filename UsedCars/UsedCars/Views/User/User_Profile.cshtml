@@ -119,17 +119,23 @@
                 </div>
 
                 <div class="col-auto">
-                    <form method="post" asp-action="User_Garage" asp-controller="User">
-                        <input type="hidden" name="userid" value="@Model.ID" />
-                        <input type="image" src="~/pics/garage.jpg" width="30" height="30" alt="Submit Form" />
-                    </form>
+                    <a href='@Url.Action("User_Garage", "User", new { id = Model.ID})'>
+                        <img src="~/pics/garage.jpg" width="35" height="35" />
+                    </a>
                 </div>
 
                 <div class="col-auto">
                     <a href="#" data-toggle="modal" data-target="#exampleModal">
-                        <img src="~/pics/comment.png" width="30" height="30" />
+                        <img src="~/pics/comment.png" width="35" height="35" />
                     </a>
                 </div>
+
+                <div class="col-auto">
+                    <a href='@Url.Action("User_Shops", "User", new { id = Model.ID})'>
+                        <img src="~/pics/shop.png" width="35" height="35" />
+                    </a>
+                </div>
+
             </div>
         }
 
