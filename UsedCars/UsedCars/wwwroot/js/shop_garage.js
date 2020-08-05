@@ -134,7 +134,7 @@ function createVehicle() {
         Odometer: parseInt(document.getElementById("odometer").value),
         Description: document.getElementById("description").value,
         Validity: document.getElementById("validity").value == "Valid",
-        Shop_ID: parseInt(document.getElementById("shopid").value)
+        Shop_ID: parseInt(shopID)
     };
     var vehJson = JSON.stringify(vehicle);
     //
